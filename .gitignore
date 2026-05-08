@@ -8,11 +8,15 @@ C:\_dump\
 .env.local
 *.local
 
+# Instruções locais do Claude Code (contém credenciais e contexto privado)
+CLAUDE.md
+
 # Pasta aninhada de sessao anterior (pode ser deletada manualmente)
 /DM_Petrvs_icmbio_mysql/
 
 # VS Code
 .vscode/settings.local.json
+*.code-workspace
 
 # Windows
 Thumbs.db
