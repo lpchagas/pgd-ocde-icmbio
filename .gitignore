@@ -14,6 +14,10 @@ CLAUDE.md
 # Pasta aninhada de sessao anterior (pode ser deletada manualmente)
 /DM_Petrvs_icmbio_mysql/
 
+# Dados de teste e validação (contêm dados operacionais do ICMBio — não versionar)
+Tabelas CSV/
+Testes PETRVS/
+
 # VS Code
 .vscode/settings.local.json
 *.code-workspace
