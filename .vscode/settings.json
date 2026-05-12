@@ -6,5 +6,6 @@
     "editor.detectIndentation": false,
     "files.exclude": {
         "**/__pycache__": true
-    }
+    },
+    "cSpell.language": "en,pt-BR"
 }
