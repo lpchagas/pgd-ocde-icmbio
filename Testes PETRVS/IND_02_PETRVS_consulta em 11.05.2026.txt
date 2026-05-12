@@ -1,0 +1,88 @@
+INDICADOR 2: Proporção de entregas concluídas em relação ao total de entregas planejadas no ciclo
+Análise Comparativa – Dados da Tabela x Sistema PETRVS
+Foi realizada análise comparativa entre os dados constantes na tabela extraída do PETRVS e as informações registradas diretamente no sistema, considerando o indicador referente à proporção de entregas concluídas (entregas que chegaram a 99% da meta são contadas como não cumpridas) em relação ao total de entregas planejadas no ciclo.
+ 
+1. PARNA PAU BRASIL
+Quantidade de entregas planejadas
+O quantitativo total de entregas planejadas para 2025 está correto na tabela.
+Foram identificados 4 planos de entregas, totalizando:
+•	68 entregas 
+•	46 entregas 
+•	45 entregas 
+•	66 entregas 
+Total: 225 entregas planejadas
+Quantidade de entregas concluídas
+Foi identificada divergência no quantitativo de entregas concluídas informado na tabela.
+A tabela apresenta:
+•	18 entregas concluídas 
+Entretanto, durante a verificação no sistema PETRVS, foram localizadas apenas:
+•	5 entregas com registros de conclusão, vinculadas ao plano de abril a junho. 
+Adicionalmente, observou-se que:
+•	O plano referente ao período de outubro a dezembro ainda não se encontra concluído/avaliado; 
+•	Não foi possível identificar, no sistema, elementos que justifiquem a contabilização de 18 entregas concluídas. 
+Observação
+Existe a possibilidade de inconsistência decorrente de comportamento anterior do sistema PETRVS, considerando que, até versões anteriores (aproximadamente até outubro), o sistema permitia a conclusão da execução sem o devido registro formal da entrega.
+Dessa forma, recomenda-se verificação adicional da origem do quantitativo de “18 entregas concluídas” apresentado na tabela.
+ 
+2. COAGR1
+Quantidade de entregas planejadas
+Os dados constantes na tabela estão compatíveis com os registros do sistema.
+Foram identificados 4 planos de entregas em 2025, totalizando:
+•	13 entregas 
+•	53 entregas 
+•	32 entregas 
+•	29 entregas 
+Total: 127 entregas planejadas
+Quantidade de entregas concluídas
+Não foram identificadas divergências entre a tabela e o sistema PETRVS.
+Verificou-se que:
+•	Todos os planos foram avaliados em 2025; 
+•	Todas as entregas possuem registros com 100% das metas concluídas. 
+Conclusão:
+•	Os dados da tabela estão consistentes com as informações registradas no sistema. 
+ 
+3. NGI-SALGADO
+Quantidade de entregas planejadas
+Foi identificada divergência no quantitativo total de entregas planejadas.
+No sistema PETRVS, o NGI-SALGADO possui:
+•	4 planos de entregas para 2025; 
+•	Totalizando 84 entregas planejadas. 
+ 
+Print da tela do petrvs com o total de entregas por plano
+
+Entretanto, a tabela apresenta:
+•	103 entregas planejadas 
+Portanto, o quantitativo informado na tabela não corresponde aos dados localizados no sistema.
+Quantidade de entregas concluídas
+Em relação às metas concluídas:
+•	Todos os planos foram avaliados em 2025; 
+•	Todas as entregas possuem registros com 100% das metas concluídas ou totalidade da meta registrada. 
+Conclusão:
+•	A divergência está concentrada no quantitativo total de entregas planejadas apresentado na tabela. 
+ 
+4. RESEXMARSOURE
+Quantidade de entregas planejadas
+Os dados referentes ao quantitativo total de entregas planejadas estão corretos e compatíveis entre a tabela e o sistema PETRVS.
+Foram identificados 4 planos de entregas em 2025, totalizando:
+•	31 entregas 
+•	45 entregas 
+•	25 entregas 
+•	42 entregas 
+Total: 143 entregas planejadas
+O quantitativo de entregas planejadas apresentado na tabela corresponde aos dados registrados no sistema. 
+Quantidade de entregas concluídas
+Foi identificada divergência no quantitativo de entregas concluídas.
+Durante a análise no sistema PETRVS, foram localizadas apenas:
+•	4 entregas concluídas, considerando aquelas que atingiram 100% da meta pactuada. 
+Entretanto, a tabela apresenta:
+•	23 entregas concluídas 
+Não foi possível identificar, no sistema, registros que justifiquem o quantitativo de 23 entregas concluídas informado na tabela.
+•	Conclusão:
+A divergência observada refere-se exclusivamente ao quantitativo de entregas concluídas.
+ 
+Conclusão Geral
+Após análise comparativa entre a tabela extraída e os registros disponíveis no PETRVS:
+•	A unidade COAGR1 apresentou conformidade entre os dados da tabela e os registros do sistema; 
+•	A unidade PARNA PAU BRASIL e RESEXMARSOURE apresentaram divergência no quantitativo de entregas concluídas; 
+•	A unidade NGI-SALGADO apresentou divergência no quantitativo total de entregas planejadas. 
+
