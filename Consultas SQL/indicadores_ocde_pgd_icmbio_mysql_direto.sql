@@ -211,6 +211,7 @@ with parametros as (
 entregas_base as (
     select
         u.sigla                                                    as unidade_sigla,
+        u.nome                                                     as unidade_nome,
         pee.id                                                     as id_entrega,
         coalesce(
             nullif(trim(pee.descricao), ''),
@@ -235,6 +236,7 @@ entregas_base as (
 entregas_com_taxa as (
     select
         unidade_sigla,
+        unidade_nome,
         id_entrega,
         nome_entrega,
         descricao_entrega,
@@ -248,6 +250,7 @@ entregas_com_taxa as (
 )
 select
     unidade_sigla,
+    unidade_nome,
     id_entrega,
     nome_entrega,
     descricao_entrega,
