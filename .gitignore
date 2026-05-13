@@ -26,3 +26,7 @@ Tabelas CSV/
 # Windows
 Thumbs.db
 desktop.ini
+
+# Apresentações (podem conter dados sensíveis)
+*.pptx
+*.ppt
