@@ -1,73 +1,82 @@
-# Visao Geral do Projeto
+# Visão Geral do Projeto
 
-## Para quem e este documento
+## Para quem é este documento
 
-Este documento e para **qualquer perfil** — gestores, analistas ou equipe tecnica. Se voce e gestor e quer entender os indicadores sem SQL, comece pelo [08-guia-rapido-gestores.md](08-guia-rapido-gestores.md).
-
----
-
-## 1. O que e o DM_Petrvs_icmbio_mysql
-
-Este projeto e um conjunto de **consultas SQL e documentacao** para calcular os **indicadores OCDE/PGD do ICMBio** diretamente dos dados originais do PETRVS, sem nenhuma transformacao intermediaria.
-
-**Em linguagem simples:** imagine que o PETRVS e um grande arquivo de tabelas de dados. Este projeto e o conjunto de formulas e instrucoes para extrair as metricas que voce precisa dessas tabelas, sem criar copias ou versoes modificadas dos dados.
+Este documento é para **qualquer perfil** — gestores, analistas ou equipe técnica. Se você é gestor e quer entender os indicadores sem SQL, comece pelo [08-guia-rapido-gestores.md](08-guia-rapido-gestores.md).
 
 ---
 
-## 2. Quando usar este caminho
+## 1. O que é o DM_Petrvs_icmbio_mysql
 
-| Situacao | Recomendacao |
+Este projeto é um conjunto de **consultas SQL e documentação** para calcular os **indicadores OCDE/PGD do ICMBio** diretamente dos dados originais do PETRVS, sem nenhuma transformação intermediária.
+
+**Em linguagem simples:** imagine que o PETRVS é um grande arquivo de tabelas de dados. Este projeto é o conjunto de fórmulas e instruções para extrair as métricas que você precisa dessas tabelas, sem criar cópias ou versões modificadas dos dados.
+
+Os dados são acessados em **tempo real**, diretamente do banco do Dataprev via Denodo — não é necessário instalar banco de dados na máquina, restaurar arquivos de backup nem ter conhecimento de infraestrutura.
+
+---
+
+## 2. Quando usar este projeto
+
+| Situação | Recomendação |
 | --- | --- |
-| Validar a origem dos dados | Este projeto |
-| Auditoria ou investigacao pontual | Este projeto |
-| Ambiente sem Docker | Este projeto |
+| Calcular os indicadores OCDE/PGD com dados atualizados | **Este projeto** |
+| Validar a origem dos dados | **Este projeto** |
+| Auditoria ou investigação pontual | **Este projeto** |
+| Ambiente sem instalação de software servidor | **Este projeto** |
 | Dashboards recorrentes e automatizados | DM_Petrvs_icmbio_postgre |
-| ETL completo com dimensoes e fatos | DM_Petrvs_icmbio_postgre |
+| ETL completo com dimensões e fatos | DM_Petrvs_icmbio_postgre |
 
 ---
 
-## 3. Fluxo de funcionamento
+## 3. Como funciona — o fluxo em três etapas
 
 ```text
-Dump PETRVS (.sql)
-       |
-       v
-MySQL Server 8.0 local (banco de dados instalado no Windows)
-       |
-       v
-DBeaver (ferramenta de consulta — interface grafica)
-       |
-       v
-Resultado exportavel para Excel ou CSV
+Banco PETRVS (Dataprev)
+        |
+        v
+  Denodo (acesso via internet, dados em tempo real)
+        |
+        v
+  DBeaver (ferramenta de consulta — interface gráfica, gratuita)
+        |
+        v
+  Resultado exportável para Excel ou CSV
 ```
 
-Nao ha transformacao de dados. As consultas leem diretamente as tabelas originais do PETRVS.
+Não há transformação de dados. As consultas leem diretamente as tabelas originais do PETRVS. O Denodo é a camada de acesso — ele entrega os dados sem que você precise instalar um banco de dados na sua máquina.
+
+**O que você precisa para começar:**
+
+- DBeaver Community instalado (gratuito, [dbeaver.io/download](https://dbeaver.io/download/))
+- Credenciais de acesso ao Denodo fornecidas pelo responsável do projeto no seu órgão
+- IP da sua máquina ou rede liberado pelo Dataprev
 
 ---
 
 ## 4. Como o PETRVS organiza os dados — analogia para entender
 
-O PETRVS trabalha com dois tipos de planos. Entender a diferenca e essencial para interpretar os indicadores.
+O PETRVS trabalha com dois tipos de planos. Entender a diferença é essencial para interpretar os indicadores.
 
-### Plano de Entregas (nivel da unidade)
+### Plano de Entregas (nível da unidade)
 
-E o contrato de resultados da **unidade**. A CGOV, por exemplo, define no inicio do semestre quais entregas vai produzir e qual e a meta numerica de cada uma.
+É o contrato de resultados da **unidade**. A CGOV, por exemplo, define no início do semestre quais entregas vai produzir e qual é a meta numérica de cada uma.
 
 No banco de dados, isso fica em duas tabelas:
 
-- `planos_entregas`: o "cabecalho" do plano (periodo, unidade, status)
-- `planos_entregas_entregas`: cada entrega individual (meta planejada, meta executada)
+- `planos_entregas` — o "cabeçalho" do plano (período, unidade, status)
+- `planos_entregas_entregas` — cada entrega individual (meta planejada, meta executada)
 
-### Plano de Trabalho (nivel do servidor)
+### Plano de Trabalho (nível do servidor)
 
-E a agenda individual de cada servidor. O servidor declara em quais entregas da unidade vai trabalhar e qual percentual da sua carga horaria vai dedicar a cada uma.
+É a agenda individual de cada servidor. O servidor declara em quais entregas da unidade vai trabalhar e qual percentual da sua carga horária vai dedicar a cada uma.
 
 No banco de dados, isso fica em:
 
-- `planos_trabalhos`: o plano do servidor (quem, qual unidade, periodo)
-- `planos_trabalhos_entregas`: o vinculo entre o plano do servidor e cada entrega (com o percentual de dedicacao, campo `forca_trabalho`)
+- `planos_trabalhos` — o plano do servidor (quem, qual unidade, período)
+- `planos_trabalhos_entregas` — o vínculo entre o plano do servidor e cada entrega (com o percentual de dedicação, campo `forca_trabalho`)
 
-**A pergunta que os indicadores respondem:** as metas foram atingidas? O esforco foi distribuido de forma equilibrada entre as entregas e os servidores?
+**A pergunta que os indicadores respondem:** as metas foram atingidas? O esforço foi distribuído de forma equilibrada entre as entregas e os servidores?
 
 ---
 
@@ -76,35 +85,45 @@ No banco de dados, isso fica em:
 | Tabela | Papel nos indicadores |
 | --- | --- |
 | `planos_entregas_entregas` | Metas planejadas e executadas (I02, I03, I04) |
-| `planos_trabalhos_entregas` | Vinculo servidor × entrega + percentual dedicacao (I05, I06, I07, I08) |
+| `planos_trabalhos_entregas` | Vínculo servidor × entrega + percentual dedicação (I05, I06, I07, I08) |
 | `planos_trabalhos` | Plano de trabalho do servidor (I05 a I08) |
 | `planos_entregas` | Contexto do ciclo de planejamento (I07, I08) |
 | `unidades` | Sigla e nome da unidade (todos os indicadores) |
 | `usuarios` | Nome do servidor (I05, I06) |
+| `tipos_modalidades` | Regime de trabalho — presencial, híbrido, remoto (I01) |
+| `avaliacoes` | Notas das avaliações individuais e de unidade (I09 a I12) |
 
 ---
 
-## 6. Diferenca em relacao ao projeto datamart
+## 6. Os 12 indicadores OCDE/PGD
 
-| Aspecto | Este projeto (mysql) | Projeto datamart (postgre) |
+O projeto cobre quatro eixos de análise, totalizando 12 indicadores. O índice navegável completo está em [06-indicadores-ocde-mysql.md](06-indicadores-ocde-mysql.md).
+
+| Eixo | Indicadores | Foco |
 | --- | --- | --- |
-| Banco de dados | MySQL local | PostgreSQL (container) |
-| Docker | Nao necessario | Necessario |
-| Transformacao de dados | Nenhuma | ETL stage -> dim -> fato |
-| Dashboards Superset | Nao | Sim |
-| Complexidade de setup | Baixa | Media/alta |
-| Fidelidade a origem | Maxima | Media (dados transformados) |
+| 1 — Trabalho Remoto | I01 | Distribuição por regime (presencial / híbrido / remoto) |
+| 2 — Execução | I02, I03, I04 | Cumprimento de entregas e atingimento de metas |
+| 3 — Carga de Trabalho | I05, I06, I07, I08 | Distribuição de esforço e horas por entrega |
+| 4 — Desempenho e Avaliação | I09, I10, I11, I12 | Notas, coerência entre avaliações individual e de unidade |
 
 ---
 
-## 7. Requisito tecnico
+## 7. Diferença em relação ao projeto datamart
 
-Os indicadores I05, I06, I07 e I08 usam **window functions** (`RANK()`, `AVG() OVER`) e **CTEs recursivas** (`WITH RECURSIVE`), que exigem **MySQL 8.0 ou superior**.
+| Aspecto | Este projeto (Denodo/MySQL) | Projeto datamart (postgre) |
+| --- | --- | --- |
+| Acesso aos dados | Denodo — tempo real, via internet | PostgreSQL em container Docker local |
+| Instalação local necessária | Apenas DBeaver (gratuito) | Docker + PostgreSQL + Superset |
+| Transformação de dados | Nenhuma — leitura direta | ETL completo (stage → dim → fato) |
+| Dashboards visuais | Não — resultado em tabela/CSV | Sim — Superset com gráficos |
+| Complexidade de setup | Baixa | Alta |
+| Fidelidade à origem | Máxima | Média (dados transformados) |
+| Atualização dos dados | Tempo real | Depende da frequência do ETL |
 
-Confirme a versao instalada antes de continuar:
+---
 
-```powershell
-& "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" --version
-```
+## 8. Próximo passo
 
-O resultado deve mostrar `8.0.x`. Versoes anteriores nao suportam esses recursos e retornarao erro ao executar os indicadores I05 a I08.
+- **Para configurar o acesso:** [03-acesso-direto-denodo-dbeaver.md](03-acesso-direto-denodo-dbeaver.md)
+- **Para entender os indicadores sem SQL:** [08-guia-rapido-gestores.md](08-guia-rapido-gestores.md)
+- **Para executar as consultas:** [06-indicadores-ocde-mysql.md](06-indicadores-ocde-mysql.md)

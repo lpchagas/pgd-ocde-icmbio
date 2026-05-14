@@ -1,96 +1,98 @@
 # Configuração do DBeaver para este projeto
 
-Este documento cobre configuracoes uteis do DBeaver para trabalhar com o banco `petrvs_icmbio`.
+Este documento cobre as configurações do DBeaver para trabalhar com o banco `petrvs_icmbio` via Denodo.
 
-## 1. Configuracoes recomendadas na conexao MySQL
+---
 
-Na tela de configuracao da conexao (`Edit Connection`):
+## 1. Configurações da conexão Denodo
 
-### Aba Connection
+Para editar uma conexão existente, clique com o botão direito nela no **Database Navigator** e escolha **Edit Connection**.
+
+### Aba Principal (Main)
 
 | Campo | Valor |
-|---|---|
-| Host | `localhost` |
-| Port | `3306` |
-| Database | `petrvs_icmbio` |
-| User | `root` |
-| Password | sua senha |
+| --- | --- |
+| Host | `denodo-pgd.dataprev.gov.br` |
+| Port | `443` |
+| Database/Schema | `petrvs_icmbio` |
+| Username | credencial individual fornecida pelo gestor |
+| Password | credencial individual fornecida pelo gestor |
 
-Marque **Save password locally** para nao precisar digitar toda vez.
+Marque **Save password** para não precisar digitar toda vez.
 
 ### Aba Driver Properties
 
-Se aparecer erro de autenticacao ou chave publica:
+Normalmente não é necessário alterar nada. Se aparecer erro de SSL ou certificado:
 
 | Propriedade | Valor |
-|---|---|
-| `allowPublicKeyRetrieval` | `true` |
-| `useSSL` | `false` |
+| --- | --- |
+| `useSSL` | `true` |
+| `trustServerCertificate` | `true` |
+
+---
 
 ## 2. Como abrir um SQL Editor
 
-1. Clique com o botao direito na conexao `petrvs_icmbio`.
+1. Clique com o botão direito na conexão Denodo no Database Navigator.
 2. Clique em `SQL Editor`.
 3. Clique em `New SQL Script`.
 
-Ou use o atalho `Ctrl+]` com a conexao selecionada.
+Ou use o atalho `Ctrl+]` com a conexão selecionada.
+
+---
 
 ## 3. Como executar uma consulta
 
-- Selecionar parte do SQL e apertar `Ctrl+Enter` para executar apenas a selecao.
-- `Ctrl+Enter` sem selecao executa o bloco onde o cursor esta.
+- `Ctrl+Enter` executa o bloco onde o cursor está (ou a seleção, se houver).
 - `Ctrl+A` + `Ctrl+Enter` executa o script inteiro.
+- Para os indicadores deste projeto: **sempre execute a query completa** — as CTEs são encadeadas e não funcionam executadas em partes.
+
+---
 
 ## 4. Como exportar resultado para planilha
 
-Apos executar a consulta:
+Após executar a consulta:
 
-1. Clique com o botao direito no grid de resultados.
+1. Clique com o botão direito no grid de resultados.
 2. Clique em `Export Results`.
 3. Escolha `CSV` ou `XLSX`.
 4. Siga o assistente e escolha a pasta de destino.
+
+Salve os CSVs na pasta local `Tabelas CSV/` (que está no `.gitignore` e não vai para o GitHub).
+
+---
 
 ## 5. Como salvar uma consulta como arquivo SQL
 
 1. No editor SQL aberto, pressione `Ctrl+S`.
 2. Escolha um nome e pasta.
-3. O arquivo sera salvo como `.sql` e pode ser reaberto depois.
+3. O arquivo é salvo como `.sql` e pode ser reaberto depois.
 
-## 6. Como trabalhar com multiplas abas
+---
 
-O DBeaver permite abrir varias abas de SQL Editor ao mesmo tempo. Isso e util para:
+## 6. Como trabalhar com múltiplas abas
 
-- Executar a consulta de auditoria em uma aba e o indicador em outra.
+O DBeaver permite abrir várias abas de SQL Editor ao mesmo tempo. Isso é útil para:
+
+- Executar uma consulta de auditoria em uma aba e o indicador em outra.
 - Comparar resultados lado a lado.
 
 Use `Ctrl+]` repetidamente para abrir novas abas.
 
-## 7. Limite de recursao para CTEs recursivas (I07 e I08)
+---
 
-Os indicadores I07 e I08 usam CTEs recursivas para gerar o calendario. Para periodos maiores que 1 ano, execute antes da consulta:
+## 7. Nota sobre CTEs recursivas (I07 e I08)
 
-```sql
-SET SESSION cte_max_recursion_depth = 5000;
-```
+Os indicadores I07 e I08 usam CTEs recursivas para gerar o calendário de dias úteis. O comando `SET SESSION cte_max_recursion_depth`, específico do MySQL, **não se aplica ao Denodo**.
 
-Para 1 ano (365 dias), o limite padrao de 1000 ja e suficiente.
+Se as queries de I07 e I08 apresentarem erro de profundidade de recursão no Denodo, consulte [docs/06.3.3-i07.md](06.3.3-i07.md) para a versão adaptada da query.
 
-## 8. Configurar execucao automatica do SET SESSION
+---
 
-Se quiser que o limite de recursao seja configurado automaticamente ao conectar:
+## 8. Vantagens do DBeaver para este projeto
 
-1. Va em `Edit Connection` > `Connection` > `Initialization`.
-2. No campo `Initial SQL`, adicione:
-
-```sql
-SET SESSION cte_max_recursion_depth = 5000;
-```
-
-Isso executa o comando toda vez que o DBeaver abrir a conexao.
-
-## 9. Vantagens do DBeaver para este projeto
-
-- Trabalha com MySQL e PostgreSQL no mesmo programa (util se voce tambem usar o datamart).
+- Suporta conexão Denodo com download automático de driver.
 - Exporta resultados para CSV/XLSX sem instalar nada adicional.
-- Permite abrir e comparar varios scripts ao mesmo tempo.
+- Permite abrir e comparar vários scripts ao mesmo tempo.
 - Visualiza estrutura das tabelas graficamente (diagrama ER).
+- Funciona de forma idêntica em Windows, macOS e Linux.
