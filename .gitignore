@@ -31,3 +31,6 @@ desktop.ini
 *.pptx
 *.ppt
 *.pdf
+
+# Notebooks Jupyter (podem conter credenciais e dados operacionais)
+*.ipynb

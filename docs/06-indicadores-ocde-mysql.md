@@ -10,12 +10,21 @@ Para o contexto estratégico do projeto, fórmulas e status de cada indicador, c
 
 ## Como usar
 
-1. Abra a conexão MySQL `petrvs_icmbio` no DBeaver
+### Opção A — DBeaver (tradicional)
+
+1. Abra a conexão `petrvs_icmbio 2` (Denodo) no DBeaver
 2. Navegue até o indicador desejado na tabela abaixo
 3. Copie a consulta completa do documento do indicador para um SQL Editor
 4. Ajuste `data_inicio` e `data_fim` no bloco `parametros` no topo da consulta
 5. Execute a consulta completa (não execute blocos isolados)
 6. Exporte o resultado: botão direito → Export → CSV ou Excel
+
+### Opção B — Jupyter Notebook no VS Code *(recomendado para iniciantes)*
+
+1. Abra o arquivo `consultas_denodo.ipynb` no VS Code
+2. Siga o guia: [10-jupyter-guia-iniciantes.md](10-jupyter-guia-iniciantes.md)
+3. Use a função `run_query(sql)` para executar qualquer consulta desta documentação
+4. O resultado já aparece como tabela e pode ser exportado para CSV com uma linha de código
 
 ### Padrão do bloco `parametros`
 
