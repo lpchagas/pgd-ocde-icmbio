@@ -5,6 +5,7 @@ C:/_dump/
 C:\_dump\
 
 # Arquivos locais com credenciais
+.env
 .env.local
 *.local
 
@@ -33,4 +34,6 @@ desktop.ini
 *.pdf
 
 # Notebooks Jupyter (podem conter credenciais e dados operacionais)
+# O template público é a exceção: não tem credenciais e serve de base para outros órgãos
 *.ipynb
+!consultas_denodo_template.ipynb
