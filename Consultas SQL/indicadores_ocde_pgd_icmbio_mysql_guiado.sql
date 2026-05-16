@@ -48,19 +48,20 @@
 -- - calcula a proporcao de cada regime sobre o total
 --
 -- Requisito tecnico:
--- - usa window function sum() over () para calcular proporcao - requer MySQL 8.0+
+-- - usa window function sum() over () para calcular proporcao (Denodo VQL)
+-- - CAST('...' AS DATE) obrigatorio no Denodo - DATE() do MySQL nao funciona
 --
 -- Pre-requisito de mapeamento:
 -- - os valores de modalidade vem de tipos_modalidades.nome
 -- - verificar no banco quais sao os nomes exatos (ex: 'Teletrabalho', 'Presencial')
 -- - um servidor com PT em mais de uma modalidade no periodo sera contado
---   na modalidade do primeiro PT captado pelo SELECT DISTINCT (comportamento esperado)
+--   em cada modalidade (dupla contagem intencional - comportamento esperado)
 
 with parametros as (
     select
-        date('2025-01-01') as data_inicio,
-        date('2025-12-31') as data_fim,
-        0                  as incluir_excluidos
+        CAST('2025-01-01' AS DATE) as data_inicio,
+        CAST('2025-12-31' AS DATE) as data_fim,
+        0                          as incluir_excluidos
 ),
 servidores_no_periodo as (
     select distinct
@@ -70,8 +71,8 @@ servidores_no_periodo as (
     left join tipos_modalidades tm
         on tm.id = pt.tipo_modalidade_id
     cross join parametros p
-    where date(pt.data_inicio) <= p.data_fim
-      and date(pt.data_fim)   >= p.data_inicio
+    where CAST(pt.data_inicio AS DATE) <= p.data_fim
+      and CAST(pt.data_fim   AS DATE) >= p.data_inicio
       and (p.incluir_excluidos = 1 or pt.deleted_at is null)
       and pt.usuario_id is not null
 ),
@@ -105,13 +106,14 @@ order by total_servidores desc;
 -- - permite comparar o perfil de regime entre unidades diferentes
 --
 -- Requisito tecnico:
--- - usa window function sum() over (partition by) - requer MySQL 8.0+
+-- - usa window function sum() over (partition by) (Denodo VQL)
+-- - CAST('...' AS DATE) obrigatorio no Denodo - DATE() do MySQL nao funciona
 
 with parametros as (
     select
-        date('2025-01-01') as data_inicio,
-        date('2025-12-31') as data_fim,
-        0                  as incluir_excluidos
+        CAST('2025-01-01' AS DATE) as data_inicio,
+        CAST('2025-12-31' AS DATE) as data_fim,
+        0                          as incluir_excluidos
 ),
 servidores_por_unidade as (
     select distinct
@@ -125,8 +127,8 @@ servidores_por_unidade as (
     left join unidades un
         on un.id = pt.unidade_id
     cross join parametros p
-    where date(pt.data_inicio) <= p.data_fim
-      and date(pt.data_fim)   >= p.data_inicio
+    where CAST(pt.data_inicio AS DATE) <= p.data_fim
+      and CAST(pt.data_fim   AS DATE) >= p.data_inicio
       and (p.incluir_excluidos = 1 or pt.deleted_at is null)
       and pt.usuario_id is not null
 ),

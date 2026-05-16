@@ -18,16 +18,16 @@ O banco PETRVS é organizado em **4 camadas de abstração** que representam o f
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │ 1. CAMADA DE REFERÊNCIA                                     │
-│    (usuários, unidades, tipos de dados, programas PGD)     │
+│    (usuários, unidades, tipos de dados, programas PGD)      │
 ├─────────────────────────────────────────────────────────────┤
 │ 2. CAMADA DE PLANEJAMENTO                                   │
-│    (planos de entregas, planos de trabalho, metas)         │
+│    (planos de entregas, planos de trabalho, metas)          │
 ├─────────────────────────────────────────────────────────────┤
 │ 3. CAMADA DE EXECUÇÃO                                       │
-│    (atividades, consolidações, afastamentos, ocorrências)  │
+│    (atividades, consolidações, afastamentos, ocorrências)   │
 ├─────────────────────────────────────────────────────────────┤
 │ 4. CAMADA DE AVALIAÇÃO & RESULTADO                          │
-│    (avaliações, progressos, resultados, checklist)        │
+│    (avaliações, progressos, resultados, checklist)          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -727,15 +727,15 @@ programas ───────────────────────�
 ├── nome, normativa, data_inicio, data_fim                          │
 ├── periodicidade_consolidacao, dias_tolerancia_*                   │
 └── unidade_id (FK → unidades)                    ┌── referenciado ─┘
-                                                   │
-usuarios                                           │
-├── id (PK)                                        │
-├── nome, cpf, matricula, ident_unica              │
-├── situacao_siape, situacao_funcional              │
-├── participa_pgd                                  │
-└── tipo_modalidade_id (FK → tipos_modalidades)    │
-                                                   │
-unidades ──────────────────────────────────────────┘
+                                                  │
+usuarios                                          │
+├── id (PK)                                       │
+├── nome, cpf, matricula, ident_unica             │
+├── situacao_siape, situacao_funcional            │
+├── participa_pgd                                 │
+└── tipo_modalidade_id (FK → tipos_modalidades)   │
+                                                  │
+unidades ─────────────────────────────────────────┘
 ├── id (PK)
 ├── sigla, nome, path (hierarquia)
 ├── unidade_pai_id (FK → unidades) [AUTORREFERÊNCIA]

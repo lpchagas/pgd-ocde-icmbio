@@ -19,9 +19,9 @@
 -- =========================================================
 with parametros as (
     select
-        date('2025-01-01') as data_inicio,
-        date('2025-12-31') as data_fim,
-        0                  as incluir_excluidos
+        CAST('2025-01-01' AS DATE) as data_inicio,
+        CAST('2025-12-31' AS DATE) as data_fim,
+        0                          as incluir_excluidos
 ),
 servidores_no_periodo as (
     select distinct
@@ -31,8 +31,8 @@ servidores_no_periodo as (
     left join tipos_modalidades tm
         on tm.id = pt.tipo_modalidade_id
     cross join parametros p
-    where date(pt.data_inicio) <= p.data_fim
-      and date(pt.data_fim)   >= p.data_inicio
+    where CAST(pt.data_inicio AS DATE) <= p.data_fim
+      and CAST(pt.data_fim   AS DATE) >= p.data_inicio
       and (p.incluir_excluidos = 1 or pt.deleted_at is null)
       and pt.usuario_id is not null
 ),
@@ -62,9 +62,9 @@ order by total_servidores desc;
 -- =========================================================
 with parametros as (
     select
-        date('2025-01-01') as data_inicio,
-        date('2025-12-31') as data_fim,
-        0                  as incluir_excluidos
+        CAST('2025-01-01' AS DATE) as data_inicio,
+        CAST('2025-12-31' AS DATE) as data_fim,
+        0                          as incluir_excluidos
 ),
 servidores_por_unidade as (
     select distinct
@@ -78,8 +78,8 @@ servidores_por_unidade as (
     left join unidades un
         on un.id = pt.unidade_id
     cross join parametros p
-    where date(pt.data_inicio) <= p.data_fim
-      and date(pt.data_fim)   >= p.data_inicio
+    where CAST(pt.data_inicio AS DATE) <= p.data_fim
+      and CAST(pt.data_fim   AS DATE) >= p.data_inicio
       and (p.incluir_excluidos = 1 or pt.deleted_at is null)
       and pt.usuario_id is not null
 ),
