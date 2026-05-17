@@ -18,7 +18,8 @@ CLAUDE.md
 # Exportações brutas do DBeaver (dados operacionais — não versionar)
 Tabelas CSV/
 
-# Testes PETRVS/ é versionada (relatórios técnicos de validação — dados públicos de gestão)
+# Testes PETRVS/ — registros de validação interna da CGOV (não versionar)
+Testes PETRVS/
 
 # VS Code
 .vscode/settings.local.json
