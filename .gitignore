@@ -11,6 +11,7 @@ C:\_dump\
 
 # Instruções locais do Claude Code (contém credenciais e contexto privado)
 CLAUDE.md
+docs/09-protocolo-validacao-indicadores.md
 
 # Pasta aninhada de sessao anterior (pode ser deletada manualmente)
 /DM_Petrvs_icmbio_mysql/
