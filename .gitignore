@@ -1,0 +1,42 @@
+# Dumps do banco (nunca versionar)
+*.sql.gz
+*.sql.zip
+C:/_dump/
+C:\_dump\
+
+# Arquivos locais com credenciais
+.env
+.env.local
+*.local
+.secrets.baseline
+
+# Instruções locais do Claude Code (contém credenciais e contexto privado)
+CLAUDE.md
+docs/09-protocolo-validacao-indicadores.md
+
+# Pasta aninhada de sessao anterior (pode ser deletada manualmente)
+/DM_Petrvs_icmbio_mysql/
+
+# Exportações brutas do DBeaver (dados operacionais — não versionar)
+Tabelas CSV/
+
+# Testes PETRVS/ — registros de validação interna da CGOV (não versionar)
+Testes PETRVS/
+
+# VS Code
+.vscode/settings.local.json
+*.code-workspace
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Apresentações (podem conter dados sensíveis)
+*.pptx
+*.ppt
+*.pdf
+
+# Notebooks Jupyter (podem conter credenciais e dados operacionais)
+# O template público é a exceção: não tem credenciais e serve de base para outros órgãos
+*.ipynb
+!consultas_denodo_template.ipynb
