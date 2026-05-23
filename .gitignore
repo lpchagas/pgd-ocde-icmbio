@@ -8,6 +8,7 @@ C:\_dump\
 .env
 .env.local
 *.local
+.secrets.baseline
 
 # Instruções locais do Claude Code (contém credenciais e contexto privado)
 CLAUDE.md
