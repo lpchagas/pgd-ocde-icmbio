@@ -201,6 +201,13 @@ order by r.taxa_cumprimento_perc desc, r.unidade_sigla;
 -- Indicador 3
 -- Taxa de cumprimento de metas por entrega
 -- Base de origem: planos_entregas + planos_entregas_entregas
+--
+-- SERIE TEMPORAL: usar IND_03.1_run_total.py (Python/JDBC)
+-- Ciclos: trimestral 2025 (T1-T4) | quadrimestral 2026 (Q1-Q3)
+-- Filtro de data: pee.data_fim — prazo individual da entrega.
+-- Diferenca em relacao ao I02/I04: estes usam sobreposicao do ciclo PE;
+-- o I03 captura especificamente as entregas que "vencem" no periodo.
+-- Nao comparar taxas entre T (90d) e Q (120d) diretamente.
 -- =========================================================
 with parametros as (
     select

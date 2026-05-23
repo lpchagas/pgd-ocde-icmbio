@@ -276,6 +276,14 @@ order by r.taxa_cumprimento_perc desc, r.unidade_sigla;
 -- - join substituido para pe.unidade_id (dono do PE)
 -- - pe.deleted_at adicionado ao soft-delete
 -- - status_entrega expandido de 3 para 5 categorias (padrao OCDE)
+--
+-- SERIE TEMPORAL: usar IND_03.1_run_total.py (Python/JDBC)
+-- Ciclos: trimestral 2025 (T1-T4) | quadrimestral 2026 (Q1-Q3)
+-- Filtro de data: pee.data_fim (prazo individual) — intencional no I03.
+-- O I03 responde "como foi cada entrega que venceu neste periodo?",
+-- diferente do I02/I04 que usam sobreposicao do ciclo PE completo.
+-- Nao comparar taxas entre T (90d) e Q (120d) diretamente.
+-- Referencia: docs/06.2.2-i03.md — Secao 6.
 
 with parametros as (
     select
