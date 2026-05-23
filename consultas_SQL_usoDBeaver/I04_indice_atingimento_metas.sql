@@ -3,7 +3,7 @@
 -- Eixo 2 — Execução
 -- =========================================================
 -- Tabelas : planos_entregas, planos_entregas_entregas, unidades
--- Conexão : Denodo via DBeaver (sem prefixo petrvs_icmbio_)
+-- Conexão : Denodo via DBeaver — prefixo petrvs_icmbio_ obrigatório (confirmado 23.05.2026)
 -- Revisado: 23.05.2026
 -- =========================================================
 -- DIFERENÇA EM RELAÇÃO AO I03:
@@ -30,10 +30,10 @@ entregas_ciclo AS (
         pee.id                                       AS id_entrega,
         ABS(COALESCE(pee.progresso_realizado, 0))
             / NULLIF(ABS(pee.progresso_esperado), 0) AS proporcao_atingimento
-    FROM planos_entregas pe
-    JOIN planos_entregas_entregas pee
+    FROM petrvs_icmbio_planos_entregas pe
+    JOIN petrvs_icmbio_planos_entregas_entregas pee
         ON pee.plano_entrega_id = pe.id
-    JOIN unidades u
+    JOIN petrvs_icmbio_unidades u
         ON u.id = pe.unidade_id
     CROSS JOIN parametros p
     WHERE CAST(pe.data_inicio AS DATE) <= p.data_fim

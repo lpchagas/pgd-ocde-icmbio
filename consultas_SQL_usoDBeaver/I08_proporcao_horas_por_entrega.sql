@@ -4,7 +4,7 @@
 -- =========================================================
 -- Tabelas : planos_trabalhos, planos_trabalhos_entregas,
 --           planos_entregas_entregas, unidades
--- Conexão : Denodo via DBeaver (sem prefixo petrvs_icmbio_)
+-- Conexão : Denodo via DBeaver — prefixo petrvs_icmbio_ obrigatório (confirmado 23.05.2026)
 -- Revisado: 23.05.2026
 -- =========================================================
 -- RELAÇÃO COM O I07:
@@ -36,7 +36,7 @@ planos_horas AS (
             ) + 1,
             0
         ) * 5.0 / 7.0 * p.horas_por_dia AS horas_planejadas_plano
-    FROM planos_trabalhos pt
+    FROM petrvs_icmbio_planos_trabalhos pt
     CROSS JOIN parametros p
     WHERE CAST(pt.data_inicio AS DATE) <= p.data_fim
       AND CAST(pt.data_fim   AS DATE) >= p.data_inicio
@@ -54,12 +54,12 @@ horas_por_entrega AS (
         )                            AS nome_entrega,
         COALESCE(NULLIF(TRIM(pee.descricao_entrega), ''), 'N.I.') AS descricao_entrega,
         ph.horas_planejadas_plano * (COALESCE(pte.forca_trabalho, 0) / 100.0) AS horas_alocadas
-    FROM planos_trabalhos_entregas pte
+    FROM petrvs_icmbio_planos_trabalhos_entregas pte
     JOIN planos_horas ph
         ON ph.plano_trabalho_id = pte.plano_trabalho_id
-    LEFT JOIN planos_entregas_entregas pee
+    LEFT JOIN petrvs_icmbio_planos_entregas_entregas pee
         ON pee.id = pte.plano_entrega_entrega_id
-    LEFT JOIN unidades un
+    LEFT JOIN petrvs_icmbio_unidades un
         ON un.id = ph.unidade_id
     WHERE pte.plano_entrega_entrega_id IS NOT NULL
 ),
@@ -69,7 +69,7 @@ capacidade_unidade AS (
         COALESCE(un.sigla, 'N.I.')      AS unidade_sigla,
         SUM(ph.horas_planejadas_plano)  AS total_horas_disponiveis_unidade
     FROM planos_horas ph
-    LEFT JOIN unidades un
+    LEFT JOIN petrvs_icmbio_unidades un
         ON un.id = ph.unidade_id
     GROUP BY COALESCE(un.sigla, 'N.I.')
 )

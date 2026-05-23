@@ -3,7 +3,7 @@
 -- Eixo 2 — Execução
 -- =========================================================
 -- Tabelas : planos_entregas, planos_entregas_entregas, unidades
--- Conexão : Denodo via DBeaver (sem prefixo petrvs_icmbio_)
+-- Conexão : Denodo via DBeaver — prefixo petrvs_icmbio_ obrigatório (confirmado 23.05.2026)
 -- Validado: 17.05.2026 — IND_03.5_relatorio_validacao_17.05.2026.md
 -- Revisado: 23.05.2026
 -- =========================================================
@@ -37,10 +37,10 @@ entregas_base AS (
         COALESCE(NULLIF(TRIM(pee.descricao_entrega), ''), 'N.I.') AS descricao_entrega,
         pee.progresso_esperado                                     AS meta_planejada,
         COALESCE(pee.progresso_realizado, 0)                       AS meta_executada
-    FROM planos_entregas pe
-    JOIN planos_entregas_entregas pee
+    FROM petrvs_icmbio_planos_entregas pe
+    JOIN petrvs_icmbio_planos_entregas_entregas pee
         ON pee.plano_entrega_id = pe.id
-    JOIN unidades u
+    JOIN petrvs_icmbio_unidades u
         ON u.id = pe.unidade_id
     CROSS JOIN parametros p
     WHERE CAST(pee.data_fim AS DATE) BETWEEN p.data_inicio AND p.data_fim

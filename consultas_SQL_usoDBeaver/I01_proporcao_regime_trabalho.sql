@@ -2,14 +2,21 @@
 -- I01 — Proporção de servidores por regime de trabalho
 -- Eixo 1 — Trabalho Remoto
 -- =========================================================
--- Tabelas : planos_trabalhos, tipos_modalidades, unidades
--- Conexão : Denodo via DBeaver (sem prefixo petrvs_icmbio_)
+-- Tabelas : planos_trabalhos, usuarios, integracao_servidores, unidades
+-- Conexão : Denodo via DBeaver — prefixo petrvs_icmbio_ obrigatório (confirmado 23.05.2026)
 -- Datas   : CAST('...' AS DATE) — DATE() não funciona no Denodo
 -- Revisado: 23.05.2026
 -- =========================================================
+-- NOTA TÉCNICA (confirmada em 23.05.2026)
+--   A view tipos_modalidades está inacessível no Denodo.
+--   O campo de modalidade é obtido via integracao_servidores.modalidade_pgd
+--   (campo SIAPE/PGD), acessado pelo join: planos_trabalhos → usuarios (id=usuario_id)
+--   → integracao_servidores (cpf=cpf). Os valores retornados são os códigos
+--   do PGD Nacional — verificar os valores reais no banco antes de interpretar.
+-- =========================================================
 -- COMO USAR
 -- 1. Ajuste data_inicio e data_fim no bloco "parametros"
--- 2. Execute a VARIANTE 1 OU a VARIANTE 2 separadamente (Ctrl+A Ctrl+Enter na query escolhida)
+-- 2. Execute a VARIANTE 1 OU a VARIANTE 2 separadamente (Ctrl+A Ctrl+Enter)
 -- incluir_excluidos: 0 = só ativos | 1 = inclui deleted_at
 -- =========================================================
 
@@ -23,17 +30,19 @@
 WITH parametros AS (
     SELECT
         CAST('2025-01-01' AS DATE) AS data_inicio,
-        CAST('2025-12-31' AS DATE) AS data_fim,
+        CURRENT_DATE               AS data_fim,
         0                          AS incluir_excluidos
 ),
 -- Servidor distinto por modalidade (evita dupla contagem se tiver 2 PTs no período)
 servidores_no_periodo AS (
     SELECT DISTINCT
         pt.usuario_id,
-        COALESCE(tm.nome, 'N.I.') AS modalidade
-    FROM planos_trabalhos pt
-    LEFT JOIN tipos_modalidades tm
-        ON tm.id = pt.tipo_modalidade_id
+        COALESCE(ins.modalidade_pgd, 'N.I.') AS modalidade
+    FROM petrvs_icmbio_planos_trabalhos pt
+    JOIN  petrvs_icmbio_usuarios u
+        ON  u.id  = pt.usuario_id
+    JOIN  petrvs_icmbio_integracao_servidores ins
+        ON  ins.cpf = u.cpf
     CROSS JOIN parametros p
     WHERE CAST(pt.data_inicio AS DATE) <= p.data_fim
       AND CAST(pt.data_fim   AS DATE) >= p.data_inicio
@@ -68,7 +77,7 @@ ORDER BY total_servidores DESC;
 WITH parametros AS (
     SELECT
         CAST('2025-01-01' AS DATE) AS data_inicio,
-        CAST('2025-12-31' AS DATE) AS data_fim,
+        CURRENT_DATE               AS data_fim,
         0                          AS incluir_excluidos
 ),
 servidores_por_unidade AS (
@@ -76,12 +85,14 @@ servidores_por_unidade AS (
         COALESCE(un.sigla, 'N.I.') AS unidade_sigla,
         COALESCE(un.nome,  'N.I.') AS unidade_nome,
         pt.usuario_id,
-        COALESCE(tm.nome,  'N.I.') AS modalidade
-    FROM planos_trabalhos pt
-    LEFT JOIN tipos_modalidades tm
-        ON tm.id = pt.tipo_modalidade_id
-    LEFT JOIN unidades un
-        ON un.id = pt.unidade_id
+        COALESCE(ins.modalidade_pgd, 'N.I.') AS modalidade
+    FROM petrvs_icmbio_planos_trabalhos pt
+    JOIN  petrvs_icmbio_usuarios u
+        ON  u.id  = pt.usuario_id
+    JOIN  petrvs_icmbio_integracao_servidores ins
+        ON  ins.cpf = u.cpf
+    LEFT JOIN petrvs_icmbio_unidades un
+        ON  un.id = pt.unidade_id
     CROSS JOIN parametros p
     WHERE CAST(pt.data_inicio AS DATE) <= p.data_fim
       AND CAST(pt.data_fim   AS DATE) >= p.data_inicio

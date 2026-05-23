@@ -4,7 +4,7 @@
 -- =========================================================
 -- Tabelas : planos_trabalhos, planos_trabalhos_entregas,
 --           planos_entregas_entregas, planos_entregas, unidades
--- Conexão : Denodo via DBeaver (sem prefixo petrvs_icmbio_)
+-- Conexão : Denodo via DBeaver — prefixo petrvs_icmbio_ obrigatório (confirmado 23.05.2026)
 -- Revisado: 23.05.2026
 -- =========================================================
 -- REESCRITA SEM WITH RECURSIVE
@@ -50,7 +50,7 @@ planos_horas AS (
             0
         ) * 5.0 / 7.0 * p.horas_por_dia AS horas_planejadas_plano
         -- Nota: fator 5/7 aproxima dias úteis sem gerar calendário recursivo
-    FROM planos_trabalhos pt
+    FROM petrvs_icmbio_planos_trabalhos pt
     CROSS JOIN parametros p
     WHERE CAST(pt.data_inicio AS DATE) <= p.data_fim
       AND CAST(pt.data_fim   AS DATE) >= p.data_inicio
@@ -71,14 +71,14 @@ horas_por_entrega AS (
         CAST(pe.data_inicio AS DATE) AS inicio_vigencia_pe,
         CAST(pe.data_fim    AS DATE) AS fim_vigencia_pe,
         ph.horas_planejadas_plano * (COALESCE(pte.forca_trabalho, 0) / 100.0) AS horas_alocadas
-    FROM planos_trabalhos_entregas pte
+    FROM petrvs_icmbio_planos_trabalhos_entregas pte
     JOIN planos_horas ph
         ON ph.plano_trabalho_id = pte.plano_trabalho_id
-    LEFT JOIN planos_entregas_entregas pee
+    LEFT JOIN petrvs_icmbio_planos_entregas_entregas pee
         ON pee.id = pte.plano_entrega_entrega_id
-    LEFT JOIN planos_entregas pe
+    LEFT JOIN petrvs_icmbio_planos_entregas pe
         ON pe.id = pee.plano_entrega_id
-    LEFT JOIN unidades un
+    LEFT JOIN petrvs_icmbio_unidades un
         ON un.id = ph.unidade_id
     WHERE pte.plano_entrega_entrega_id IS NOT NULL
 )

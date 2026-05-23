@@ -4,7 +4,7 @@
 -- =========================================================
 -- Tabelas : avaliacoes, planos_trabalhos_consolidacoes,
 --           planos_trabalhos, tipos_avaliacoes_notas, unidades
--- Conexão : Denodo via DBeaver (sem prefixo petrvs_icmbio_)
+-- Conexão : Denodo via DBeaver — prefixo petrvs_icmbio_ obrigatório (confirmado 23.05.2026)
 -- Revisado: 23.05.2026
 -- =========================================================
 -- VÍNCULO: avaliacoes → planos_trabalhos_consolidacoes → planos_trabalhos
@@ -30,12 +30,12 @@ avaliacoes_pt AS (
         av.id       AS id_avaliacao,
         pt.unidade_id,
         tan.nota    AS valor_nota
-    FROM avaliacoes av
-    JOIN planos_trabalhos_consolidacoes ptc
+    FROM petrvs_icmbio_avaliacoes av
+    JOIN petrvs_icmbio_planos_trabalhos_consolidacoes ptc
         ON ptc.id = av.plano_trabalho_consolidacao_id
-    JOIN planos_trabalhos pt
+    JOIN petrvs_icmbio_planos_trabalhos pt
         ON pt.id = ptc.plano_trabalho_id
-    JOIN tipos_avaliacoes_notas tan
+    JOIN petrvs_icmbio_tipos_avaliacoes_notas tan
         ON tan.id = av.tipo_avaliacao_nota_id
     CROSS JOIN parametros p
     WHERE av.plano_trabalho_consolidacao_id IS NOT NULL
@@ -59,7 +59,7 @@ media_por_unidade AS (
         SUM(CASE WHEN avpt.valor_nota = 4 THEN 1 ELSE 0 END) AS qtd_nota_4,
         SUM(CASE WHEN avpt.valor_nota = 5 THEN 1 ELSE 0 END) AS qtd_nota_5
     FROM avaliacoes_pt avpt
-    LEFT JOIN unidades un
+    LEFT JOIN petrvs_icmbio_unidades un
         ON un.id = avpt.unidade_id
     GROUP BY COALESCE(un.sigla, 'N.I.'), COALESCE(un.nome, 'N.I.')
 )

@@ -3,7 +3,7 @@
 -- Eixo 3 — Carga de Trabalho
 -- =========================================================
 -- Tabelas : planos_trabalhos, planos_trabalhos_entregas, unidades, usuarios
--- Conexão : Denodo via DBeaver (sem prefixo petrvs_icmbio_)
+-- Conexão : Denodo via DBeaver — prefixo petrvs_icmbio_ obrigatório (confirmado 23.05.2026)
 -- Revisado: 23.05.2026
 -- =========================================================
 -- PERGUNTA: a carga de entregas está distribuída de forma equitativa entre os servidores?
@@ -27,12 +27,12 @@ vinculos_entregas AS (
         pt.usuario_id              AS id_servidor,
         COALESCE(us.nome,  'N.I.') AS nome_servidor,
         pte.plano_entrega_entrega_id AS id_entrega
-    FROM planos_trabalhos pt
-    JOIN planos_trabalhos_entregas pte
+    FROM petrvs_icmbio_planos_trabalhos pt
+    JOIN petrvs_icmbio_planos_trabalhos_entregas pte
         ON pte.plano_trabalho_id = pt.id
-    LEFT JOIN unidades un
+    LEFT JOIN petrvs_icmbio_unidades un
         ON un.id = pt.unidade_id
-    LEFT JOIN usuarios us
+    LEFT JOIN petrvs_icmbio_usuarios us
         ON us.id = pt.usuario_id
     CROSS JOIN parametros p
     WHERE CAST(pt.data_inicio AS DATE) <= p.data_fim
