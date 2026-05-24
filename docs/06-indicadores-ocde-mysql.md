@@ -1,6 +1,6 @@
-# Manual Técnico — Indicadores OCDE/PGD ICMBio (MySQL)
+# Manual Técnico — Indicadores OCDE/PGD ICMBio (Denodo, tempo real)
 
-Este documento é o índice do manual técnico dos 12 indicadores do *Performance Toolkit* OCDE/PGD, implementados para execução direta na base original PETRVS em MySQL, sem datamart intermediário.
+Este documento é o índice do manual técnico dos 12 indicadores do *Performance Toolkit* OCDE/PGD, implementados para execução direta na base original PETRVS via Denodo (virtualização em tempo real), sem datamart intermediário.
 
 Cada indicador tem seu próprio documento com: finalidade, consulta SQL completa, explicação passo a passo dos blocos e interpretação dos resultados com exemplos do ICMBio.
 
@@ -32,10 +32,10 @@ Todas as consultas começam com este bloco de controle:
 
 ```sql
 with parametros as (
-    select
-        date('2025-01-01') as data_inicio,
-        date('2025-12-31') as data_fim,
-        0 as incluir_excluidos   -- 0 = só ativos; 1 = inclui excluídos
+        select
+                CAST('2025-01-01' AS DATE) as data_inicio,
+                CURRENT_DATE               as data_fim,
+                0 as incluir_excluidos   -- 0 = só ativos; 1 = inclui excluídos
 )
 ```
 
@@ -44,6 +44,15 @@ Os indicadores I07 e I08 têm um campo adicional:
 ```sql
         8 as horas_por_dia       -- jornada diária em horas (padrão: 8)
 ```
+
+### Padrão de desagregação temporal (quando aplicável)
+
+As consultas que apresentam resultado por periodo devem seguir a regra padrao usada nos scripts Python de referencia:
+
+- **2025:** periodos trimestrais (T1: jan-mar, T2: abr-jun, T3: jul-set, T4: out-dez)
+- **2026 em diante:** periodos quadrimestrais (Q1: jan-abr, Q2: mai-ago, Q3: set-dez)
+
+Isso garante consistencia entre os CSVs gerados e a leitura dos resultados por periodo.
 
 ---
 
@@ -103,15 +112,11 @@ Contexto do eixo: [06.4-eixo4.md](06.4-eixo4.md)
 
 | Requisito | Afeta |
 | --- | --- |
-| MySQL 8.0+ obrigatório | I05 (window function `AVG() OVER`), I07 e I08 (CTE recursiva `WITH RECURSIVE`) |
-| `SET SESSION cte_max_recursion_depth = 5000` | I07 e I08 com períodos superiores a ~2,7 anos |
-| Feriados móveis inseridos manualmente | I07 e I08 (Sexta-feira da Paixão, Corpus Christi — ver bloco `feriados_moveis`) |
-
-Confirme a versão do banco com:
-
-```sql
-select version();
-```
+| Denodo VQL (conexao ativa no DBeaver) | Todos os indicadores |
+| Datas com `CAST('AAAA-MM-DD' AS DATE)` | Todos os indicadores |
+| Prefixo `petrvs_icmbio_` no JDBC/Notebook | Todas as consultas via Python |
+| CTEs recursivas com compatibilidade pendente | I07 e I08 |
+| Window functions devem ser testadas no DBeaver | I05 (e outros que venham a usar) |
 
 ---
 
@@ -128,6 +133,7 @@ Cada documento de eixo apresenta:
 Cada documento de indicador apresenta:
 
 1. **Finalidade** — pergunta central respondida
-2. **Consulta completa MySQL** — pronta para copiar e executar no DBeaver
-3. **Passos da consulta** — explicação de cada bloco CTE com analogias para usuários de negócio
-4. **Como interpretar o resultado** — tabela de colunas + exemplos nomeados com unidades do ICMBio (CGOV, CGOF, AUDIT, DIREC, COGEO)
+2. **Consulta completa (script Python, sem credenciais)** — pronta para uso no Jupyter/VS Code
+3. **Passos da consulta** — explicação de cada bloco/CTE em linguagem simples
+4. **Consulta de diagnostico pre-execucao** — QT-01/02/03 e o motivo de cada uma
+5. **Como interpretar o resultado** — tabela de colunas + exemplos com unidades reais do ICMBio

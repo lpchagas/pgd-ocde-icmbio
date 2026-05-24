@@ -14,6 +14,9 @@ C:\_dump\
 CLAUDE.md
 docs/09-protocolo-validacao-indicadores.md
 
+# Skills locais (nao sincronizar com repositorio online)
+.github/skills/
+
 # Pasta aninhada de sessao anterior (pode ser deletada manualmente)
 /DM_Petrvs_icmbio_mysql/
 
