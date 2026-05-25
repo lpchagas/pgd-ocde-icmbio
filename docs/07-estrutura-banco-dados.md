@@ -1,9 +1,9 @@
 # Estrutura do Banco de Dados PETRVS — Denodo (Tempo Real)
 
-**Última atualização:** 15 de maio de 2026
+**Última atualização:** 24 de maio de 2026
 **Fonte:** Banco `petrvs_icmbio` via Denodo (MGI/Dataprev) — introspecção JDBC em tempo real
 **Total de views:** 123
-**Conexão:** `denodo-pgd.dataprev.gov.br:443`
+**Configuração de conexão:** consulte `docs/03-acesso-direto-denodo-dbeaver.md` (arquivo local, não versionado)
 
 > **Convenção de nomenclatura Denodo:** todas as views têm o prefixo `petrvs_icmbio_`.
 > O DBeaver resolve o schema automaticamente; no Jupyter (JDBC direto) use o nome completo,
@@ -35,7 +35,7 @@ O banco PETRVS é organizado em **4 camadas de abstração** que representam o f
 
 ## 2. Camada 1: Referência
 
-Tabelas que servem como base para todo o sistema. Mudam raramente.
+Tabelas que servem como base para todo o sistema.
 
 ### 2.1 Usuários e Autorização
 
@@ -69,7 +69,7 @@ Tabelas que servem como base para todo o sistema. Mudam raramente.
 | `perfil_id` | CHAR(36) | SIM | FK → `perfis` |
 | `nome_jornada` | VARCHAR(100) | SIM | Descrição da jornada de trabalho |
 | `cod_jornada` | INTEGER | SIM | Código da jornada no SIAPE |
-| `tipo_pedagio` | TINYINT | SIM | Fase do período de adaptação (pedagio) |
+| `tipo_pedagio` | TINYINT | SIM | Fase do período de adaptação (pedágio) |
 | `data_inicial_pedagio` | DATE | SIM | Início do período de adaptação |
 | `data_final_pedagio` | DATE | SIM | Fim do período de adaptação |
 | `is_admin` | BIT(1) | NÃO | Flag de administrador do sistema |
@@ -163,35 +163,53 @@ A tabela `programas` define as regras e parâmetros de cada programa de gestão 
 
 Tabelas de enumeração/referência. Prefixadas por `tipos_*`:
 
-| Tabela | Descrição | Uso principal |
-| --- | --- | --- |
-| `tipos_modalidades` | Regimes de trabalho | `planos_trabalhos`, `usuarios` |
-| `tipos_avaliacoes` | Tipos de avaliação | `avaliacoes`, `programas` |
-| `tipos_avaliacoes_notas` | Escala de conceitos (1–5) | `avaliacoes` |
-| `tipos_avaliacoes_justificativas` | Justificativas pré-definidas | `avaliacoes` |
-| `tipos_atividades` | Categorias de atividades | `atividades` |
-| `tipos_justificativas` | Motivos de desvio | Consolidações |
-| `tipos_motivos_afastamentos` | Tipos de afastamento | `afastamentos` |
-| `tipos_tarefas` | Categorias de tarefas | `atividades_tarefas` |
-| `tipos_documentos` | Categorias de documentos | `documentos` |
-| `tipos_modalidades_siape` | Modalidades conforme SIAPE | Integração |
-| `tipos_processos` | Tipos de processo | `cadeias_valores_processos` |
-| `tipos_projetos` | Categorias de projeto | `projetos` |
-| `tipos_cursos` | Categorias de cursos | `cursos` |
-| `tipos_clientes` | Categorias de clientes | `clientes` |
-| `tipos_capacidades` | Categorias de capacidade | `capacidades` |
+| Tabela | Descrição | Uso principal | Status no Denodo |
+| --- | --- | --- | --- |
+| `tipos_modalidades` | Regimes de trabalho | `planos_trabalhos`, `usuarios` | ⚠️ INACESSÍVEL — ver nota abaixo |
+| `tipos_avaliacoes` | Tipos de avaliação | `avaliacoes`, `programas` | Acessível |
+| `tipos_avaliacoes_notas` | Escala de conceitos (1–5) | `avaliacoes` | Acessível |
+| `tipos_avaliacoes_justificativas` | Justificativas pré-definidas | `avaliacoes` | — |
+| `tipos_atividades` | Categorias de atividades | `atividades` | — |
+| `tipos_justificativas` | Motivos de desvio | Consolidações | — |
+| `tipos_motivos_afastamentos` | Tipos de afastamento | `afastamentos` | — |
+| `tipos_tarefas` | Categorias de tarefas | `atividades_tarefas` | — |
+| `tipos_documentos` | Categorias de documentos | `documentos` | — |
+| `tipos_modalidades_siape` | Modalidades conforme SIAPE | Integração | — |
+| `tipos_processos` | Tipos de processo | `cadeias_valores_processos` | — |
+| `tipos_projetos` | Categorias de projeto | `projetos` | — |
+| `tipos_cursos` | Categorias de cursos | `cursos` | — |
+| `tipos_clientes` | Categorias de clientes | `clientes` | — |
+| `tipos_capacidades` | Categorias de capacidade | `capacidades` | — |
 
-**`tipos_modalidades` (9 colunas):**
+> **⚠️ `tipos_modalidades` inacessível no Denodo (confirmado em 24.05.2026):**
+> A view `petrvs_icmbio_tipos_modalidades` retorna erro de acesso no Denodo VQL.
+> Alternativa adotada para o I01: usar `integracao_servidores.modalidade_pgd`
+> (campo SIAPE/PGD), com join via `usuarios.cpf`.
+
+#### 2.4.1 Tabela `integracao_servidores` (alternativa para modalidade de trabalho — I01)
 
 | Campo | Tipo | Descrição |
 | --- | --- | --- |
-| `id` | CHAR(36) | UUID |
-| `nome` | VARCHAR(256) | Ex: "Presencial", "Híbrido", "Teletrabalho" |
-| `exige_pedagio` | BIT(1) | Exige período de adaptação |
-| `plano_trabalho_calcula_horas` | TINYINT | Se calcula horas no plano de trabalho |
-| `atividade_tempo_despendido` | TINYINT | Registra tempo despendido |
-| `atividade_esforco` | TINYINT | Registra esforço |
-| `created_at` / `updated_at` / `deleted_at` | TIMESTAMP | Auditoria |
+| `cpf` | VARCHAR(11) | CPF do servidor — chave de join com `usuarios.cpf` |
+| `modalidade_pgd` | VARCHAR | Modalidade de trabalho proveniente do SIAPE/PGD |
+
+**Padrão de join para I01:**
+
+```sql
+JOIN (
+    SELECT cpf, MIN(NULLIF(TRIM(COALESCE(modalidade_pgd, '')), '')) AS modalidade_pgd
+    FROM petrvs_icmbio_integracao_servidores
+    WHERE cpf IS NOT NULL
+    GROUP BY cpf
+) ins ON ins.cpf = u.cpf
+```
+
+> **Nota:** o `MIN()` com `GROUP BY cpf` consolida múltiplos registros por CPF (possível quando
+> o servidor tem histórico de modalidades). Alguns UUIDs sem rótulo textual podem aparecer
+> no campo `modalidade_pgd` — indicam modalidades não mapeadas no SIAPE e devem ser comunicados
+> à equipe de cadastro do PGD para normalização.
+
+---
 
 **`tipos_avaliacoes` — valores reais no banco:**
 
@@ -212,6 +230,10 @@ Tabelas de enumeração/referência. Prefixadas por `tipos_*`:
 
 > Há um registro por conceito para cada tipo de avaliação (PT e PE), totalizando 10 registros.
 > O campo `aprova` é 0 em todos os registros (nenhuma nota é automaticamente aprovativa).
+>
+> **FK nas queries:** usar `tan.id = av.tipo_avaliacao_nota_id` para o join.
+> O campo `tan.sequencia` (1–5) é o valor numérico da nota usado nos cálculos.
+> **Não usar `JSON_UNQUOTE()`** — função inexistente no Denodo VQL.
 
 ---
 
@@ -339,6 +361,26 @@ Tabelas de enumeração/referência. Prefixadas por `tipos_*`:
 > **Critério de conclusão OCDE:** `progresso_realizado >= progresso_esperado`
 > **Campo `homologado`:** zerado (0) para todo o ciclo 2025 — não usar como critério de conclusão.
 
+**Estrutura do campo `meta` (JSON) — confirmada em produção via I03:**
+
+```json
+{ "quantitativo": 150 }
+// OU
+{ "porcentagem": 100.0 }
+```
+
+O campo `realizado` tem estrutura idêntica. Para calcular a taxa de atingimento pela meta integral:
+
+```python
+meta_val = float(meta["quantitativo"])  # ou meta["porcentagem"]
+real_val = float(realizado.get("quantitativo", 0))
+taxa_integral = real_val / meta_val * 100
+```
+
+> **⚠️ Anomalia de escala em `progresso_esperado`:** alguns registros têm valores entre 0 e 1
+> (escala 0–1) em vez de 0–100. Detectar com `progresso_esperado > 0 AND progresso_esperado <= 1`.
+> Corrigir multiplicando por 100 antes de calcular taxas. Confirmado em análise diagnóstica do I03.
+
 ---
 
 #### Vinculações estratégicas dos PE
@@ -362,10 +404,10 @@ Tabelas de enumeração/referência. Prefixadas por `tipos_*`:
 | `id` | CHAR(36) | NÃO | UUID |
 | `numero` | INTEGER | NÃO | Número sequencial |
 | `status` | CHAR(21) | NÃO | Estado atual (ver distribuição abaixo) |
-| `carga_horaria` | DOUBLE | NÃO | Horas totais do período contratual |
+| `carga_horaria` | DOUBLE | NÃO | Carga de trabalho total do período (ver nota) |
 | `tempo_total` | DOUBLE | NÃO | Horas totais apuradas |
 | `tempo_proporcional` | DOUBLE | NÃO | Horas ajustadas proporcionalmente |
-| `forma_contagem_carga_horaria` | CHAR(6) | NÃO | `DIAS` ou `HORAS` |
+| `forma_contagem_carga_horaria` | CHAR(6) | NÃO | `HORAS` ou `DIAS` |
 | `data_inicio` | TIMESTAMP | NÃO | Início do plano |
 | `data_fim` | TIMESTAMP | NÃO | Fim do plano |
 | `data_arquivamento` | TIMESTAMP | SIM | Quando foi arquivado |
@@ -391,6 +433,30 @@ Tabelas de enumeração/referência. Prefixadas por `tipos_*`:
 | INCLUIDO | 207 | 1% |
 | SUSPENSO | 3 | <1% |
 
+> **Cálculo de horas para I07/I08:** o valor de `carga_horaria` é interpretado segundo `forma_contagem_carga_horaria`:
+>
+> - `'HORAS'` → valor já em horas
+> - `'DIAS'` → multiplicar por 8 (jornada federal padrão)
+>
+> **Fórmula de horas alocadas por entrega (confirmada em 24.05.2026):**
+>
+> ```text
+> carga_horaria_horas = carga_horaria × 8  (se DIAS)  OU  carga_horaria  (se HORAS)
+>
+> horas_alocadas = carga_horaria_horas
+>                 × (overlap_dias / total_dias_plano)
+>                 × (forca_trabalho / 100)
+>
+> onde:
+>   overlap_dias     = min(data_fim_plano, data_fim_periodo)
+>                      - max(data_inicio_plano, data_inicio_periodo) + 1
+>   total_dias_plano = data_fim_plano - data_inicio_plano + 1
+> ```
+>
+> Aritmética de datas: `(CAST(data1 AS DATE) - CAST(data2 AS DATE))` retorna inteiro de dias no Denodo VQL.
+> O resultado representa horas contratuais proporcionais (sem exclusão de fins de semana/feriados).
+> Diferença esperada de ~30% vs. cálculo por dias úteis.
+
 ---
 
 #### `planos_trabalhos_entregas` (10 colunas) — CRÍTICA PARA I05, I06, I07, I08
@@ -408,7 +474,13 @@ Tabelas de enumeração/referência. Prefixadas por `tipos_*`:
 
 **Totais:** 69.208 registros · 64.925 ativos
 
-> **Campo `forca_trabalho`:** único campo numérico nesta tabela. Representa o percentual de dedicação (0–100). Para calcular horas, combine com `planos_trabalhos.carga_horaria` e o período do plano. Não existem campos `quantidade` ou `horas_por_unidade` nesta tabela — a referência no CLAUDE.md é um achado a verificar nas queries de I07/I08.
+> **Campo `forca_trabalho`:** único campo numérico relevante nesta tabela. Representa o percentual de dedicação (0–100). Para calcular horas, combinar com `planos_trabalhos.carga_horaria` e o período do plano conforme fórmula acima.
+>
+> **Não existem** os campos `quantidade` ou `horas_por_unidade` nesta tabela.
+>
+> **`plano_entrega_entrega_id` nullable:** servidores podem ter PTs sem entregas vinculadas — esses registros devem ser excluídos com `pte.plano_entrega_entrega_id IS NOT NULL` nas queries de I05/I06.
+>
+> **Perspectiva de unidade nos indicadores I05 e I06:** a unidade atribuída a cada vínculo é `pt.unidade_id` (unidade *do servidor*), não `pe.unidade_id` (unidade *dona do PE*). Consequência: entregas de outros PEs executadas por servidores de uma unidade X aparecem contadas em X. Esse comportamento é intencional — os indicadores medem carga de responsabilidade por quem *executa*, não por quem *planejou*.
 
 ---
 
@@ -480,6 +552,23 @@ Tabelas de enumeração/referência. Prefixadas por `tipos_*`:
 
 **Distribuição por `status`:** AVALIADO: 23.247 · INCLUIDO: 16.852 · CONCLUIDO: 781
 
+> **Múltiplas consolidações por plano:** um único plano de trabalho pode ter várias consolidações
+> (uma por mês quando a periodicidade do programa é mensal). Isso explica por que o total de
+> `avaliacoes` vinculadas a PTs é maior do que o número de planos distintos.
+>
+> **Cadeia de join para I09–I12:**
+> `avaliacoes → planos_trabalhos_consolidacoes → planos_trabalhos → unidade_id`
+>
+> **Interpretação dos contadores no I09:**
+>
+> - `total_avaliacoes_pt` → número de registros em `avaliacoes` (1 por evento de avaliação)
+> - `total_planos_com_avaliacao` → número de `planos_trabalhos` distintos avaliados (**perspectiva que o PETRVS exibe**)
+> - `total_consolidacoes_avaliadas` → número de `planos_trabalhos_consolidacoes` distintos avaliados (nível intermediário)
+>
+> Se `total_avaliacoes_pt / total_planos_com_avaliacao` > 1.0: cada plano tem múltiplas avaliações
+> (múltiplos avaliadores ou consolidações). Para comparar com o sistema PETRVS, usar
+> `total_planos_com_avaliacao`.
+
 ---
 
 ### 4.3 Afastamentos e Ocorrências
@@ -539,9 +628,9 @@ Tabelas de enumeração/referência. Prefixadas por `tipos_*`:
 | Finados | 02/11 |
 | Proclamação da República | 15/11 |
 | Natal | 25/12 |
-| Natal2 _(registro duplicado)_ | 25/12 |
+| Natal2 *(registro duplicado)* | 25/12 |
 
-> **Atenção:** apenas 8 feriados únicos (Natal aparece duplicado). Feriados móveis (Carnaval, Corpus Christi, Sexta-feira Santa) **não estão cadastrados**. Considere isso nas queries de I07/I08 que calculam dias úteis.
+> **Atenção:** apenas 8 feriados únicos (Natal aparece duplicado). Feriados móveis (Carnaval, Corpus Christi, Sexta-feira Santa) **não estão cadastrados**. As queries de I07/I08 não utilizam esta tabela — o cálculo é feito por proporcionalidade de dias corridos (sem exclusão de fins de semana e feriados).
 
 ---
 
@@ -569,10 +658,24 @@ Tabelas de enumeração/referência. Prefixadas por `tipos_*`:
 | `plano_trabalho_consolidacao_id` | CHAR(36) | SIM | FK → `planos_trabalhos_consolidacoes` (se avaliação de PT) |
 | `plano_entrega_id` | CHAR(36) | SIM | FK → `planos_entregas` (se avaliação de PE) |
 | `tipo_avaliacao_id` | CHAR(36) | NÃO | FK → `tipos_avaliacoes` |
-| `tipo_avaliacao_nota_id` | CHAR(36) | SIM | FK → `tipos_avaliacoes_notas` (conceito estruturado) |
+| `tipo_avaliacao_nota_id` | CHAR(36) | SIM | FK → `tipos_avaliacoes_notas.id` (conceito estruturado) |
 | `created_at` / `updated_at` / `deleted_at` | TIMESTAMP | SIM | Auditoria |
 
-> O campo `nota` é LONGVARCHAR — pode conter JSON com a nota ou texto livre. Para os indicadores I09–I12, use o join com `tipos_avaliacoes_notas` via `tipo_avaliacao_nota_id` para obter o conceito estruturado (`sequencia`: 1–5).
+> **Dois tipos de avaliação — como distinguir:**
+>
+> | Tipo | Campo preenchido | Cadeia de join |
+> | --- | --- | --- |
+> | Avaliação de PT | `plano_trabalho_consolidacao_id IS NOT NULL` | `avaliacoes → ptc → pt → unidade_id` |
+> | Avaliação de PE | `plano_entrega_id IS NOT NULL` | `avaliacoes → pe → unidade_id` |
+>
+> O campo `nota` é LONGVARCHAR — pode conter JSON com a nota ou texto livre. Para os indicadores I09–I12, use o join com `tipos_avaliacoes_notas` via `tipo_avaliacao_nota_id` para obter o conceito estruturado:
+>
+> ```sql
+> JOIN petrvs_icmbio_tipos_avaliacoes_notas tan ON tan.id = av.tipo_avaliacao_nota_id
+> -- usar tan.sequencia (1–5) como valor numérico da nota
+> ```
+>
+> **I12 — somente unidades com os dois tipos:** o I12 usa JOIN interno entre as perspectivas PT e PE. Unidades com apenas um tipo não aparecem no resultado — a ausência é informação de gestão relevante (ciclo avaliativo incompleto).
 
 ---
 
@@ -587,7 +690,7 @@ deleted_at IS NULL        -- registros ativos
 deleted_at IS NOT NULL    -- excluídos logicamente
 ```
 
-Dados nunca são apagados fisicamente. **Sempre filtrar** `deleted_at IS NULL` nas queries de indicadores.
+Dados nunca são apagados fisicamente. **Sempre filtrar** `deleted_at IS NULL` em **todas** as tabelas do FROM/JOIN nas queries de indicadores.
 
 ---
 
@@ -632,11 +735,11 @@ O Denodo expõe os campos de status como `CHAR`, mas os valores seguem enumeraç
 
 ### 6.5 Campos JSON (LONGVARCHAR)
 
-Vários campos armazenam estruturas JSON em LONGVARCHAR. **Não fazer parse desses campos nas queries de indicadores** — use apenas os campos escalares:
+Vários campos armazenam estruturas JSON em LONGVARCHAR. **Não fazer parse desses campos nas queries de indicadores** — use apenas os campos escalares. Para I03 (meta integral), o parse é feito em Python após trazer os dados:
 
 | Tabela | Campos JSON |
 | --- | --- |
-| `planos_entregas_entregas` | `meta`, `realizado`, `checklist`, `etiquetas` |
+| `planos_entregas_entregas` | `meta` (`{"quantitativo": N}` ou `{"porcentagem": N}`), `realizado`, `checklist`, `etiquetas` |
 | `planos_trabalhos` | `criterios_avaliacao` |
 | `planos_trabalhos_entregas` | `meta` |
 | `avaliacoes` | `nota`, `justificativas` |
@@ -652,7 +755,7 @@ Campos de progresso e dedicação usam precisão de 2 casas decimais:
 
 | Campo | Tabela | Escala | Exemplo |
 | --- | --- | --- | --- |
-| `progresso_esperado` | `planos_entregas_entregas` | 0–100+ | 100.00 |
+| `progresso_esperado` | `planos_entregas_entregas` | 0–100+ (verificar anomalia 0–1) | 100.00 |
 | `progresso_realizado` | `planos_entregas_entregas` | 0–100+ | 75.00 |
 | `forca_trabalho` | `planos_trabalhos_entregas` | 0–100 | 20.00 |
 | `progresso` | `atividades` | 0–100 | 50.00 |
@@ -664,39 +767,57 @@ Campos de progresso e dedicação usam precisão de 2 casas decimais:
 ```text
 I01 — Proporção por regime de trabalho
 └── planos_trabalhos
-    ├── tipo_modalidade_id (FK → tipos_modalidades)
-    ├── usuario_id (FK → usuarios)
+    ├── usuario_id (FK → usuarios → cpf)
     ├── unidade_id
     └── data_inicio, data_fim, status, deleted_at
+    JOIN integracao_servidores  (via usuarios.cpf = ins.cpf)
+    └── modalidade_pgd  ← USAR em vez de tipos_modalidades (inacessível no Denodo)
 
 I02, I03, I04 — Cumprimento de entregas e atingimento de metas
 └── planos_entregas_entregas
-    ├── progresso_esperado (meta planejada)
+    ├── progresso_esperado (meta planejada) — verificar anomalia 0-1
     ├── progresso_realizado (meta executada)
-    ├── plano_entrega_id (FK → planos_entregas → unidade_id)
+    ├── plano_entrega_id (FK → planos_entregas → unidade_id)  ← JOIN CORRETO
     └── deleted_at
     JOIN planos_entregas (status, data_inicio, data_fim)
     JOIN unidades (sigla)
+    ⚠ Nunca usar pee.unidade_id como chave de unidade — é o executor individual
+    ⚠ Divisão inteira: usar "* 100.0" antes da divisão no Denodo VQL
 
 I05, I06 — Distribuição de entregas entre servidores
 └── planos_trabalhos_entregas
     ├── forca_trabalho (% dedicação)
     ├── plano_trabalho_id (FK → planos_trabalhos → usuario_id, unidade_id)
-    └── plano_entrega_entrega_id (FK → planos_entregas_entregas)
+    └── plano_entrega_entrega_id (FK → planos_entregas_entregas) [nullable]
+    ⚠ I05/I06 usam pt.unidade_id (unidade do SERVIDOR), não pe.unidade_id
+    ⚠ Window functions (AVG OVER PARTITION BY) não funcionam via JDBC Denodo
+      → Substituir por CTE separada com GROUP BY + JOIN
 
-I07, I08 — Horas por entrega (VERIFICAR COMPATIBILIDADE COM DENODO VQL)
+I07, I08 — Horas por entrega
 └── planos_trabalhos_entregas
     ├── forca_trabalho (% dedicação)
     └── plano_trabalho_id (FK → planos_trabalhos → carga_horaria, data_inicio, data_fim)
-    ⚠ Não existem campos quantidade/horas_por_unidade — calcular via carga_horaria × forca_trabalho
-    ⚠ CTEs recursivas (usadas nas queries atuais) precisam de verificação no Denodo VQL
+    ⚠ Fórmula: carga_horaria_horas × (overlap_dias / total_dias_plano) × (forca_trabalho / 100)
+    ⚠ forma_contagem_carga_horaria: HORAS (valor direto) ou DIAS (× 8)
+    ⚠ Aritmética de datas: (date1 - date2) = inteiro de dias no Denodo VQL
+    ⚠ CTEs recursivas e DIFF()/DATEDIFF()/TIMESTAMPDIFF() não existem no Denodo
 
-I09, I10, I11, I12 — Avaliações
-└── avaliacoes
-    ├── tipo_avaliacao_nota_id (FK → tipos_avaliacoes_notas → sequencia 1–5)
-    ├── tipo_avaliacao_id (FK → tipos_avaliacoes → PT ou PE)
-    ├── plano_trabalho_consolidacao_id (FK → planos_trabalhos_consolidacoes → plano_trabalho_id)
-    └── plano_entrega_id (FK → planos_entregas → unidade_id)
+I09, I10, I11 — Avaliações de PT por unidade
+└── avaliacoes (filtrar: plano_trabalho_consolidacao_id IS NOT NULL)
+    JOIN planos_trabalhos_consolidacoes ptc
+    JOIN planos_trabalhos pt → unidade_id
+    JOIN tipos_avaliacoes_notas tan ON tan.id = av.tipo_avaliacao_nota_id
+    └── tan.sequencia (1–5) = valor numérico da nota
+    ⚠ Usar total_planos_com_avaliacao para comparar com o sistema PETRVS
+      (total_avaliacoes_pt é maior por múltiplas consolidações por plano)
+
+I12 — Coerência entre avaliação PT e PE
+└── avaliacoes PT (plano_trabalho_consolidacao_id IS NOT NULL)
+    └── cadeia: av → ptc → pt → unidade_id
+    JOIN avaliacoes PE (plano_entrega_id IS NOT NULL)
+    └── cadeia: av → pe → unidade_id
+    ⚠ JOIN interno: apenas unidades com os dois tipos aparecem no resultado
+    ⚠ diferenca_direcional > 0 = PT > PE (servidor autoavalia melhor do que a unidade)
 ```
 
 ---
@@ -717,6 +838,8 @@ I09, I10, I11, I12 — Avaliações
 | `planos_trabalhos_consolidacoes` | 40.880 | 28.302 | — |
 | `feriados` | 9 | 9 | — |
 
+> Contagens obtidas via introspecção JDBC em 15.05.2026. Para dados atualizados, executar `SELECT COUNT(*) FROM petrvs_icmbio_<tabela>` no DBeaver.
+
 ---
 
 ## 9. Diagrama ER — Tabelas Críticas
@@ -734,7 +857,11 @@ usuarios                                          │
 ├── situacao_siape, situacao_funcional            │
 ├── participa_pgd                                 │
 └── tipo_modalidade_id (FK → tipos_modalidades)   │
-                                                  │
+                 ↓                                │
+integracao_servidores (alternativa ao join via tipos_modalidades)
+├── cpf (join com usuarios.cpf)
+└── modalidade_pgd
+
 unidades ─────────────────────────────────────────┘
 ├── id (PK)
 ├── sigla, nome, path (hierarquia)
@@ -746,7 +873,7 @@ planos_entregas
 ├── id (PK)
 ├── numero, nome, status
 ├── data_inicio, data_fim, avaliado_at
-├── unidade_id (FK → unidades)
+├── unidade_id (FK → unidades)  ← chave correta para I02/I04
 ├── programa_id (FK → programas)
 ├── planejamento_id (FK → planejamentos)
 └── deleted_at
@@ -755,9 +882,8 @@ planos_entregas_entregas  ← METAS
 ├── id (PK)
 ├── descricao, descricao_entrega, descricao_meta
 ├── progresso_esperado, progresso_realizado   ← CRITÉRIO OCDE
-├── destinatario
+├── meta (JSON: quantitativo ou porcentagem), realizado (JSON)
 ├── data_inicio, data_fim, homologado
-├── meta, realizado (JSON)
 ├── plano_entrega_id (FK → planos_entregas)
 ├── entrega_id (FK → entregas)               ← template de catálogo
 ├── entrega_pai_id (FK → planos_entregas_entregas) [HIERARQUIA]
@@ -766,18 +892,19 @@ planos_entregas_entregas  ← METAS
 
 planos_trabalhos
 ├── id (PK)
-├── numero, status, forma_contagem_carga_horaria
-├── carga_horaria, tempo_total, tempo_proporcional
+├── numero, status, forma_contagem_carga_horaria  ('HORAS' ou 'DIAS')
+├── carga_horaria  (em HORAS se HORAS; em DIAS se DIAS × 8)
+├── tempo_total, tempo_proporcional
 ├── data_inicio, data_fim, avaliado_at
 ├── usuario_id (FK → usuarios)
-├── unidade_id (FK → unidades)
+├── unidade_id (FK → unidades)  ← perspectiva do I05/I06
 ├── programa_id (FK → programas)
 ├── tipo_modalidade_id (FK → tipos_modalidades)
 └── deleted_at
 
 planos_trabalhos_entregas  ← VÍNCULO SERVIDOR × ENTREGA
 ├── id (PK)
-├── forca_trabalho (% dedicação 0–100)
+├── forca_trabalho (% dedicação 0–100)   ← único campo numérico
 ├── descricao, meta (JSON), orgao
 ├── plano_trabalho_id (FK → planos_trabalhos)
 ├── plano_entrega_entrega_id (FK → planos_entregas_entregas) [nullable]
@@ -797,16 +924,41 @@ avaliacoes
 ├── nota (LONGVARCHAR — JSON)
 ├── justificativa, justificativas (JSON), recurso
 ├── avaliador_id (FK → usuarios)
-├── plano_trabalho_consolidacao_id (FK → planos_trabalhos_consolidacoes) [nullable]
-├── plano_entrega_id (FK → planos_entregas) [nullable]
+├── plano_trabalho_consolidacao_id (FK → ptc) [nullable — avaliação PT]
+├── plano_entrega_id (FK → planos_entregas)   [nullable — avaliação PE]
 ├── tipo_avaliacao_id (FK → tipos_avaliacoes)
-├── tipo_avaliacao_nota_id (FK → tipos_avaliacoes_notas) [nullable]
+├── tipo_avaliacao_nota_id (FK → tipos_avaliacoes_notas.id) [nullable]
 └── deleted_at
+
+tipos_avaliacoes_notas
+├── id (PK)
+├── sequencia (1–5)  ← valor numérico da nota para cálculos
+├── nome (Excepcional, Alto desempenho, Adequado, Inadequado, Não executado)
+└── tipo_avaliacao_id (FK → tipos_avaliacoes)
 ```
 
 ---
 
-## 10. Descobertas vs. Versão Dump (mudanças relevantes)
+## 10. Compatibilidade Denodo VQL — Limitações Confirmadas em Produção
+
+| Recurso | Suporte no Denodo VQL | Alternativa |
+| --- | --- | --- |
+| `DATE('2025-01-01')` | ❌ Não existe | `CAST('2025-01-01' AS DATE)` |
+| `DIFF()`, `DATEDIFF()`, `TIMESTAMPDIFF()` | ❌ Não existe | `(CAST(d1 AS DATE) - CAST(d2 AS DATE))` — retorna inteiro de dias |
+| `SET SESSION cte_max_recursion_depth` | ❌ Não existe | Remover da query |
+| CTEs recursivas (`WITH RECURSIVE`) | ❌ Não funcionam | Usar aritmética de datas proporcional |
+| `JSON_UNQUOTE()` | ❌ Não existe | Join com `tipos_avaliacoes_notas` via `id` e usar `tan.sequencia` |
+| Window functions via JDBC (`AVG OVER PARTITION BY`) | ⚠️ Não funcionam via JDBC | CTE separada com `GROUP BY` + `JOIN` |
+| Divisão inteira | ⚠️ `3/10 = 0` (não `0.3`) | Forçar `* 1.0` antes da divisão |
+| `tipos_modalidades` | ⚠️ View inacessível | `integracao_servidores.modalidade_pgd` via `usuarios.cpf` |
+
+> **Nota sobre window functions:** funções como `AVG() OVER (PARTITION BY)` podem funcionar no DBeaver
+> (que tem seu próprio parser) mas falham quando executadas via driver JDBC direto.
+> Todos os scripts Python utilizam a alternativa por CTE separada para garantir compatibilidade.
+
+---
+
+## 11. Descobertas vs. Versão Dump e Evolução do Schema
 
 | Aspecto | Versão dump (até 14.05.2026) | Versão Denodo (atual) |
 | --- | --- | --- |
@@ -819,6 +971,15 @@ avaliacoes
 | `planos_trabalhos_entregas` | Mencionava `quantidade × horas_por_unidade` | Apenas `forca_trabalho` (10 colunas total) |
 | Função `DATE()` em SQL | Compatível com MySQL | **Incompatível com Denodo** — usar `CAST('...' AS DATE)` |
 | `SET SESSION cte_max_recursion_depth` | Necessário no MySQL | **Não existe no Denodo VQL** |
+| CTEs recursivas | Funcionavam no MySQL | **Incompatíveis com Denodo VQL** |
+| `DIFF()`/`DATEDIFF()` | Funcionavam | **Não existem no driver Denodo VDP JDBC** |
 | `progresso_esperado` / `progresso_realizado` | DECIMAL(5,2) | DECIMAL(5,2) — confirmado |
 | Coluna `data_inicio`/`data_fim` em PEE | Tipo inferido | **TIMESTAMP** (não DATE) |
 | Coluna `data_inicio`/`data_fim` em consolidações | Não documentado | **DATE** (não TIMESTAMP) |
+| `tipos_modalidades` | Acessível (MySQL) | **INACESSÍVEL via Denodo** |
+| `integracao_servidores` | Não documentado | **Nova:** alternativa para modalidade I01 |
+| Window functions via JDBC | N/A | **Não funcionam** — usar CTE separada |
+| `meta` JSON (planos_entregas_entregas) | Não documentado | Chaves: `quantitativo` ou `porcentagem` |
+| Anomalia de escala `progresso_esperado` | Não documentado | Valores 0–1 detectados (devem ser × 100) |
+| Múltiplas consolidações por plano | Não documentado | Causa ratio avaliacoes/planos > 1 no I09 |
+| Perspectiva I05/I06: unidade do servidor | Não explicitado | `pt.unidade_id` ≠ `pe.unidade_id` — design intencional |
