@@ -2,7 +2,7 @@
 
 Consultas SQL e documentação para calcular os **12 indicadores OCDE/PGD** do ICMBio diretamente do banco PETRVS em tempo real, via Denodo (MGI/Dataprev). Sem Docker, sem ETL, sem instalação de banco de dados local.
 
-Desenvolvido pela Coordenação de Governança (CGOV/ICMBio) no âmbito do piloto OCDE/MGI/UFRN para transformação do PGD em instrumento de gestão de desempenho.
+Desenvolvido pela Coordenação de Governança (CGOV/ICMBio) no âmbito do piloto OCDE/MGI para transformação do PGD em instrumento de gestão de desempenho.
 
 > **Para outros órgãos da APF:** este repositório pode ser reutilizado por qualquer instituição que utilize o PETRVS e tenha acesso ao Denodo do MGI/Dataprev. As queries funcionam sem modificação — basta apontar para o schema do seu órgão.
 

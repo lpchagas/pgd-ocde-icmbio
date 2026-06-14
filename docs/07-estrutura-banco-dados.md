@@ -35,7 +35,7 @@ O banco PETRVS é organizado em **4 camadas de abstração** que representam o f
 
 ## 2. Camada 1: Referência
 
-Tabelas que servem como base para todo o sistema. Mudam raramente.
+Tabelas que servem como base para todo o sistema.
 
 ### 2.1 Usuários e Autorização
 
