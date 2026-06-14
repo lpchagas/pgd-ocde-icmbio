@@ -1,0 +1,31 @@
+# Padronizacao de quebras de linha para todos os IDEs
+# Garante que Windows (CRLF) e Linux/Mac (LF) nao gerem conflitos falsos
+
+# Regra geral: o Git decide automaticamente o que e texto
+* text=auto
+
+# Arquivos de texto — sempre LF no repositorio, CRLF no Windows local
+*.md    text eol=lf
+*.sql   text eol=lf
+*.py    text eol=lf
+*.txt   text eol=lf
+*.json  text eol=lf
+*.csv   text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.ipynb text eol=lf
+
+# Arquivos binarios — nunca alterar
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.pptx  binary
+*.ppt   binary
+*.xlsx  binary
+*.xls   binary
+*.zip   binary
+*.gz    binary
+*.jar   binary
