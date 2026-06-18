@@ -60,8 +60,8 @@ Na pasta do projeto, localize o arquivo `.env.example`. Faça uma cópia e renom
 Abra o arquivo `.env` com o Bloco de Notas e preencha com as credenciais fornecidas pelo gestor responsável pelo PGD no seu órgão:
 
 ```ini
-DENODO_USER=11122233344
-DENODO_PASSWORD=SuaSenhaAqui
+DENODO_USER=seu_cpf_aqui
+DENODO_PASSWORD=sua_senha_aqui
 DENODO_DRIVER_PATH=C:/Users/SEU_USUARIO/AppData/Roaming/DBeaverData/...
 ```
 
@@ -72,6 +72,25 @@ DENODO_DRIVER_PATH=C:/Users/SEU_USUARIO/AppData/Roaming/DBeaverData/...
 Abra o arquivo `consultas_denodo_template.ipynb` no VS Code e execute as células em ordem.
 
 Guia completo para quem nunca usou Python: [docs/10-jupyter-guia-iniciantes.md](docs/10-jupyter-guia-iniciantes.md)
+
+---
+
+### Para rotina mensal — Scripts Python sanitizados
+
+Os scripts publicos em `scripts/indicadores/` geram os CSVs mensais dos
+indicadores sem armazenar credenciais no codigo. Eles leem a conexao do arquivo
+local `.env` e salvam as saidas em `artefatos_local/`, pasta ignorada pelo git.
+
+Exemplo:
+
+```powershell
+python scripts/indicadores/IND_02.1_run.py --dry-run
+python scripts/indicadores/IND_02.1_run.py
+```
+
+Fluxo completo: [docs/11-guia-extracao-mensal.md](docs/11-guia-extracao-mensal.md)
+
+Checklist de seguranca antes de publicar: [docs/12-seguranca-publicacao.md](docs/12-seguranca-publicacao.md)
 
 ---
 
@@ -114,11 +133,21 @@ docs/
   06-indicadores-ocde-mysql.md     Índice navegável — ponto de entrada do manual técnico
   07-estrutura-banco-dados.md      Schema real do banco: 123 views, campos e contagens
   08-guia-rapido-gestores.md       Guia sem SQL para gestores e tomadores de decisão
-  09-protocolo-validacao-indicadores.md  Protocolo de validação manual dos resultados
+  09-protocolo-validacao-indicadores.md  [LOCAL] Protocolo de validação manual dos resultados
   10-jupyter-guia-iniciantes.md    Passo a passo para usar o Notebook sem experiência em Python
+  11-guia-extracao-mensal.md       Guia operacional: calendário, comandos, troubleshooting e prompts IA
+  12-seguranca-publicacao.md       Checklist para evitar vazamento de credenciais e dados
 
   docs/06.x-eixoX.md               Documentação por eixo (4 arquivos)
   docs/06.x.x-iXX.md               Documentação por indicador (12 arquivos)
+
+scripts/
+  README.md                        Como executar os scripts publicos
+  indicadores/                     IND_XX.1_run.py sanitizados
+  diagnosticos/                    Template publico para diagnosticos locais
+  lib/                             Configuracao, CSV, periodos e auditoria comuns
+
+artefatos_local/                   [LOCAL — nao versionar] CSVs, validacoes e scripts executados
 ```
 
 ---

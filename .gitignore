@@ -1,45 +1,119 @@
-# Dumps do banco (nunca versionar)
-*.sql.gz
-*.sql.zip
-C:/_dump/
-C:\_dump\
+# =============================================================================
+# .gitignore — DM_Petrvs_icmbio_mysql
+# Atualizado em 17.06.2026
+# Princípio: tudo que contenha credenciais, dados pessoais, caminhos locais
+# ou artefatos operacionais não publicáveis deve estar aqui.
+# =============================================================================
 
-# Arquivos locais com credenciais
+# -----------------------------------------------------------------------------
+# Credenciais e configuração local (NUNCA versionar)
+# -----------------------------------------------------------------------------
 .env
 .env.local
 *.local
 .secrets.baseline
 
-# Instruções locais do Claude Code (contém credenciais e contexto privado)
+# -----------------------------------------------------------------------------
+# Instruções e memória do Claude Code (contém credenciais e contexto privado)
+# -----------------------------------------------------------------------------
 CLAUDE.md
+.claude/
+
+# -----------------------------------------------------------------------------
+# Protocolo de validação (uso interno — não publicável)
+# -----------------------------------------------------------------------------
 docs/09-protocolo-validacao-indicadores.md
 
-# Skills locais (nao sincronizar com repositorio online)
+# -----------------------------------------------------------------------------
+# Skills locais (desenvolvimento interno — não sincronizar com GitHub)
+# -----------------------------------------------------------------------------
 .github/skills/
 
-# Pasta aninhada de sessao anterior (pode ser deletada manualmente)
-/DM_Petrvs_icmbio_mysql/
+# -----------------------------------------------------------------------------
+# Dumps do banco PETRVS (nunca versionar — arquivo > 4 GB com dados pessoais)
+# -----------------------------------------------------------------------------
+*.sql
+*.sql.gz
+*.sql.zip
+_dump/
+dump/
 
-# Exportações brutas do DBeaver (dados operacionais — não versionar)
+# -----------------------------------------------------------------------------
+# Artefatos locais — CSVs mensais, diagnósticos, validações, backup de scripts
+# Estrutura atual (reestruturada em 17.06.2026):
+#   artefatos_local/
+#     entregas/YYYY-MM/          ← CSVs mensais para entrega à COCAGE/Power BI
+#     diagnosticos/YYYY-MM/      ← Scripts A4 e CSVs diagnósticos (uso interno)
+#     validacao/                 ← Relatórios A5 (.md) e PDFs de consulta A3
+#     docs_internos/             ← Documentação local não publicável
+#     historico/                 ← Artefatos legados (dump mai-2026, denodo mai-2026)
+#     backup_scripts_a1/         ← Cópias de segurança dos scripts A1
+# -----------------------------------------------------------------------------
+artefatos_local/
+
+# -----------------------------------------------------------------------------
+# Pastas legadas (migradas para artefatos_local/ em 17.06.2026 — mantidas aqui
+# por segurança caso ressurjam localmente)
+# -----------------------------------------------------------------------------
 Tabelas CSV/
-
-# Testes PETRVS/ — registros de validação interna da CGOV (não versionar)
 Testes PETRVS/
 
-# VS Code
-.vscode/settings.local.json
-*.code-workspace
+# -----------------------------------------------------------------------------
+# Dados brutos exportados — podem conter dados pessoais de servidores
+# -----------------------------------------------------------------------------
+*.csv
+*.xlsx
+*.xls
 
-# Windows
-Thumbs.db
-desktop.ini
-
-# Apresentações (podem conter dados sensíveis)
+# -----------------------------------------------------------------------------
+# Apresentações e PDFs (podem conter dados operacionais sensíveis)
+# -----------------------------------------------------------------------------
+*.pdf
 *.pptx
 *.ppt
-*.pdf
 
-# Notebooks Jupyter (podem conter credenciais e dados operacionais)
-# O template público é a exceção: não tem credenciais e serve de base para outros órgãos
+# -----------------------------------------------------------------------------
+# Notebooks Jupyter (podem conter credenciais e resultados de consultas)
+# Exceção: o template público não tem credenciais e serve de referência para a APF
+# -----------------------------------------------------------------------------
 *.ipynb
 !consultas_denodo_template.ipynb
+
+# -----------------------------------------------------------------------------
+# Python
+# -----------------------------------------------------------------------------
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# -----------------------------------------------------------------------------
+# Logs de execução
+# -----------------------------------------------------------------------------
+*.log
+
+# -----------------------------------------------------------------------------
+# VS Code — configurações locais (settings globais são versionados via settings.json)
+# -----------------------------------------------------------------------------
+.vscode/settings.local.json
+
+# -----------------------------------------------------------------------------
+# Arquivo de workspace do VS Code (contém caminhos absolutos locais)
+# -----------------------------------------------------------------------------
+*.code-workspace
+
+# -----------------------------------------------------------------------------
+# Windows
+# -----------------------------------------------------------------------------
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# -----------------------------------------------------------------------------
+# Pasta aninhada criada em sessão anterior (pode ser deletada manualmente)
+# -----------------------------------------------------------------------------
+/DM_Petrvs_icmbio_mysql/
