@@ -20,11 +20,6 @@ CLAUDE.md
 .claude/
 
 # -----------------------------------------------------------------------------
-# Protocolo de validação (uso interno — não publicável)
-# -----------------------------------------------------------------------------
-docs/09-protocolo-validacao-indicadores.md
-
-# -----------------------------------------------------------------------------
 # Skills locais (desenvolvimento interno — não sincronizar com GitHub)
 # -----------------------------------------------------------------------------
 .github/skills/

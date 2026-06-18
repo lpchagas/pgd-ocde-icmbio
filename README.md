@@ -133,7 +133,7 @@ docs/
   06-indicadores-ocde-mysql.md     Índice navegável — ponto de entrada do manual técnico
   07-estrutura-banco-dados.md      Schema real do banco: 123 views, campos e contagens
   08-guia-rapido-gestores.md       Guia sem SQL para gestores e tomadores de decisão
-  09-protocolo-validacao-indicadores.md  [LOCAL] Protocolo de validação manual dos resultados
+  09-protocolo-validacao-indicadores.md  Protocolo de validação manual dos indicadores (4 fases)
   10-jupyter-guia-iniciantes.md    Passo a passo para usar o Notebook sem experiência em Python
   11-guia-extracao-mensal.md       Guia operacional: calendário, comandos, troubleshooting e prompts IA
   12-seguranca-publicacao.md       Checklist para evitar vazamento de credenciais e dados
