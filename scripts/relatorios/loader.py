@@ -10,10 +10,30 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[2]
 ENTREGAS_BASE = ROOT / "artefatos_local" / "entregas"
 
+
+def periodo_sort_key(label: str) -> tuple[int, int]:
+    """Converte rótulo de período em (ano, mes) para ordenação cronológica.
+
+    Suporta: T1-2025 (trimestral), M03-2026 (mensal), Q2-2026 (quadrimestral).
+    """
+    parts = label.split("-")
+    try:
+        year = int(parts[-1])
+        prefix = parts[0]
+        if prefix.startswith("T"):
+            return (year, (int(prefix[1:]) - 1) * 3 + 1)
+        if prefix.startswith("M"):
+            return (year, int(prefix[1:]))
+        if prefix.startswith("Q"):
+            return (year, (int(prefix[1:]) - 1) * 4 + 1)
+    except (ValueError, IndexError):
+        pass
+    return (9999, 0)
+
 # Colunas numéricas por indicador (chave "01v1" = I01 variante v1)
 _NUM: dict[str, list[str]] = {
-    "01v1": ["percentual"],
-    "01v2": ["percentual_unidade", "total_servidores"],
+    "01v1": ["proporcao_perc"],
+    "01v2": ["proporcao_na_unidade_perc", "total_servidores"],
     "02":   ["taxa_cumprimento_perc", "total_cadastradas", "total_concluidas",
              "total_no_ciclo", "total_em_plano_avaliado"],
     "03":   ["taxa_atingimento_perc", "meta_planejada", "meta_executada",
@@ -86,19 +106,19 @@ def periodos_encerrados(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def ultimo_periodo_encerrado(df: pd.DataFrame) -> str:
-    """Retorna o rótulo do último período encerrado no DataFrame."""
+    """Retorna o rótulo do último período encerrado no DataFrame (ordem cronológica)."""
     enc = periodos_encerrados(df)
     if enc.empty or "periodo" not in enc.columns:
         return ""
-    return sorted(enc["periodo"].unique())[-1]
+    return sorted(enc["periodo"].unique(), key=periodo_sort_key)[-1]
 
 
 def dois_ultimos_periodos(df: pd.DataFrame) -> tuple[str, str]:
-    """Retorna (penúltimo, último) período encerrado. Se só há um, retorna ("", ultimo)."""
+    """Retorna (penúltimo, último) período encerrado (cronológico). Se só há um, retorna ("", ultimo)."""
     enc = periodos_encerrados(df)
     if enc.empty or "periodo" not in enc.columns:
         return "", ""
-    pers = sorted(enc["periodo"].unique())
+    pers = sorted(enc["periodo"].unique(), key=periodo_sort_key)
     if len(pers) == 1:
         return "", pers[-1]
     return pers[-2], pers[-1]

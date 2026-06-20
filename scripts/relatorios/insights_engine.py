@@ -5,10 +5,16 @@ from typing import Optional
 
 import pandas as pd
 
-from .metricas import MetricasPeriodo, pct_unidades_em_faixa
 from .classificador import semaforo, VERDE, AMARELO, VERMELHO
+from .loader import periodo_sort_key
+from .metricas import MetricasPeriodo, pct_unidades_em_faixa
 
 # ── helpers internos ─────────────────────────────────────────────────────────
+
+def _sorted_periodos(df: pd.DataFrame) -> list[str]:
+    """Retorna os rótulos de período únicos em ordem cronológica."""
+    return sorted(df["periodo"].unique(), key=periodo_sort_key)
+
 
 def _enc(df: Optional[pd.DataFrame]) -> pd.DataFrame:
     if df is None:
@@ -22,7 +28,7 @@ def _ult(df: Optional[pd.DataFrame]) -> str:
     e = _enc(df)
     if e.empty or "periodo" not in e.columns:
         return ""
-    return sorted(e["periodo"].unique())[-1]
+    return sorted(e["periodo"].unique(), key=periodo_sort_key)[-1]
 
 
 def _delta_str(delta: Optional[float]) -> str:
@@ -53,9 +59,10 @@ def insights_eixo1(
     enc2 = _enc(df_v2)
     ult1 = _ult(df_v1) if df_v1 is not None else ""
 
-    if not enc1.empty and ult1 and "modalidade" in enc1.columns and "percentual" in enc1.columns:
+    pct_col = "proporcao_perc" if "proporcao_perc" in (enc1.columns if not enc1.empty else []) else "percentual"
+    if not enc1.empty and ult1 and "modalidade" in enc1.columns and pct_col in enc1.columns:
         ult_df = enc1[enc1["periodo"] == ult1]
-        pivot = ult_df.groupby("modalidade")["percentual"].mean().sort_values(ascending=False)
+        pivot = ult_df.groupby("modalidade")[pct_col].mean().sort_values(ascending=False)
         if not pivot.empty:
             dom, dom_val = pivot.index[0], pivot.iloc[0]
             ins.append(
@@ -66,13 +73,13 @@ def insights_eixo1(
                 seg, seg_val = pivot.index[1], pivot.iloc[1]
                 ins.append(f"Segunda modalidade mais frequente: **{seg}** ({seg_val:.1f}%).")
 
-        # Tendência entre primeiro e último período
-        pers = sorted(enc1["periodo"].unique())
+        # Tendência entre primeiro e último período (ordenação cronológica)
+        pers = _sorted_periodos(enc1)
         if len(pers) >= 2:
             p_ini, p_fim = pers[0], pers[-1]
             for mod in enc1["modalidade"].unique():
-                v_ini = enc1[(enc1["periodo"] == p_ini) & (enc1["modalidade"] == mod)]["percentual"].mean()
-                v_fim = enc1[(enc1["periodo"] == p_fim) & (enc1["modalidade"] == mod)]["percentual"].mean()
+                v_ini = enc1[(enc1["periodo"] == p_ini) & (enc1["modalidade"] == mod)][pct_col].mean()
+                v_fim = enc1[(enc1["periodo"] == p_fim) & (enc1["modalidade"] == mod)][pct_col].mean()
                 if pd.notna(v_ini) and pd.notna(v_fim):
                     delta = v_fim - v_ini
                     if abs(delta) > 5:
@@ -455,7 +462,7 @@ def insights_cruzados(
 
     # I09 × I11: média baixa + poucos excepcionais = perfil conservador ou problema real
     media_i09 = serie09[-1].media if serie09 else None
-    perc_exc = serie11[-1].media if len(serie10) > 0 else None  # workaround if serie11 not passed
+    perc_exc = serie10[-1].media if len(serie10) > 0 else None
     if media_i09 is not None and media_i09 < 3.0:
         ins.append(
             "Combinação I09 × I10: média geral de avaliações PT abaixo de 3.0 (Adequado) "
