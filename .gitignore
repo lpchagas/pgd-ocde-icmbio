@@ -14,10 +14,12 @@
 .secrets.baseline
 
 # -----------------------------------------------------------------------------
-# Instruções e memória do Claude Code (contém credenciais e contexto privado)
+# Instruções e memória dos agentes locais (contêm credenciais e contexto privado)
 # -----------------------------------------------------------------------------
 CLAUDE.md
+AGENTS.md
 .claude/
+.codex/
 
 # -----------------------------------------------------------------------------
 # Antigravity Desktop — agentes e metadados do projeto (uso local)
