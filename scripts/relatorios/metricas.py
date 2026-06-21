@@ -57,6 +57,10 @@ def ranking_unidades(df: pd.DataFrame, col: str, periodo: str,
     if df is None or df.empty or col not in df.columns or "unidade_sigla" not in df.columns:
         return pd.DataFrame()
     sub = df[df["periodo"] == periodo][["unidade_sigla", col]].dropna()
+    # Para indicadores com múltiplas linhas por unidade (ex: I05 tem uma linha por servidor),
+    # agrupa pela média para garantir uma linha por unidade no ranking.
+    if sub.duplicated(subset=["unidade_sigla"]).any():
+        sub = sub.groupby("unidade_sigla", as_index=False)[col].mean()
     return sub.sort_values(col, ascending=asc).head(n).reset_index(drop=True)
 
 
