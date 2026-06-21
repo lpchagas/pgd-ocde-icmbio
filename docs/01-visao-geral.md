@@ -6,7 +6,7 @@ Este documento é para **qualquer perfil** — gestores, analistas ou equipe té
 
 ---
 
-## 1. O que é o DM_Petrvs_icmbio_mysql
+## 1. O que é o pgd-ocde-icmbio
 
 Este projeto é um conjunto de **consultas SQL e documentação** para calcular os **indicadores OCDE/PGD do ICMBio** diretamente dos dados originais do PETRVS, sem nenhuma transformação intermediária.
 

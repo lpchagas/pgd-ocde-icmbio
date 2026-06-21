@@ -116,7 +116,7 @@ Nas rodadas seguintes, basta executar os scripts.
 
 ### Configuração do arquivo `.env`
 
-O arquivo `.env` fica na raiz do projeto (`DM_Petrvs_icmbio_mysql\.env`) e
+O arquivo `.env` fica na raiz do projeto (`pgd-ocde-icmbio\.env`) e
 contém as credenciais de acesso ao Denodo. Ele **nunca é publicado no repositório**
 (está no `.gitignore`). Copie o `.env.example` como `.env` e preencha:
 
@@ -165,7 +165,7 @@ Abra o **PowerShell** (tecla Windows → "PowerShell" → Enter), cole o bloco a
 e pressione Enter. Aguarde de 5 a 15 minutos dependendo da conexão com o Dataprev:
 
 ```powershell
-cd "C:\Projetos\DM_Petrvs_icmbio_mysql"
+cd "C:\Projetos\pgd-ocde-icmbio"
 
 $indicadores = @(
     @{script="IND_01.1_run.py"; nome="I01 - Regime de trabalho"},
@@ -259,7 +259,7 @@ Use quando precisar gerar ou re-executar apenas um indicador. Primeiro navegue
 até a raiz do projeto:
 
 ```powershell
-cd "C:\Projetos\DM_Petrvs_icmbio_mysql"
+cd "C:\Projetos\pgd-ocde-icmbio"
 ```
 
 Depois execute o indicador desejado:
@@ -524,7 +524,7 @@ a causa com base no CLAUDE.md e nos logs.
 O script IND_XX.1_run.py falhou com o seguinte erro:
 [cole aqui a mensagem de erro completa]
 
-Com base no projeto DM_Petrvs_icmbio_mysql e no CLAUDE.md, identifique a causa e proponha
+Com base no projeto pgd-ocde-icmbio e no CLAUDE.md, identifique a causa e proponha
 a correção. Leve em conta que o banco é acessado via Denodo VQL (não MySQL), que funções
 MySQL como json_unquote(), date_add() e WITH RECURSIVE não funcionam, e que os nomes de
 tabela precisam do prefixo petrvs_icmbio_ no JDBC.

@@ -1,4 +1,4 @@
-# DM_Petrvs_icmbio — Indicadores OCDE/PGD via Denodo
+# pgd-ocde-icmbio — Indicadores OCDE/PGD via Denodo
 
 Consultas SQL e documentação para calcular os **12 indicadores OCDE/PGD** do ICMBio diretamente do banco PETRVS em tempo real, via Denodo (MGI/Dataprev). Sem Docker, sem ETL, sem instalação de banco de dados local.
 
@@ -42,7 +42,7 @@ Leia [docs/08-guia-rapido-gestores.md](docs/08-guia-rapido-gestores.md) — ente
 #### Passo 1 — Clone ou baixe este repositório
 
 ```bash
-git clone https://github.com/lpchagas/DM_Petrvs_icmbio_mysql.git
+git clone https://github.com/lpchagas/pgd-ocde-icmbio.git
 ```
 
 Ou clique em **Code > Download ZIP** no GitHub e extraia a pasta.
