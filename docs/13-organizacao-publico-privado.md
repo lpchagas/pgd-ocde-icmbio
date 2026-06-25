@@ -132,7 +132,7 @@ pip install jpype1 pandas matplotlib seaborn python-dotenv
 ### Passo 6 — Testar a conexão
 
 ```powershell
-python scripts/indicadores/IND_02.1_run.py
+python ocde/indicadores/IND_02.1_run.py
 ```
 
 Se retornar dados, o ambiente está configurado corretamente.

@@ -30,7 +30,7 @@ M12), enquanto os Planos de Entrega das unidades continuam seguindo ciclos
 quadrimestrais (Q1: jan–abr, Q2: mai–ago, Q3: set–dez). Cada indicador é
 atualizado no ritmo do instrumento que usa como fonte principal.
 
-A lógica de períodos está em `scripts/lib/periodos.py`:
+A lógica de períodos está em `lib/periodos.py`:
 
 - `build_periods_pe()` — usado por I02, I03, I04, I07, I08, I12
 - `build_periods_pt()` — usado por I01, I05, I06, I09, I10, I11
@@ -146,7 +146,7 @@ git pull
 Get-Content .env
 
 # 3. Testar a conexão sem abrir o Denodo
-python scripts/indicadores/IND_02.1_run.py --dry-run
+python ocde/indicadores/IND_02.1_run.py --dry-run
 ```
 
 O `--dry-run` mostra o instrumento (PE ou PT), o documento-fonte, a SQL adaptada
@@ -185,7 +185,7 @@ $indicadores = @(
 $erros = @()
 foreach ($ind in $indicadores) {
     Write-Host "`n>>> $($ind.nome)" -ForegroundColor Cyan
-    python "scripts/indicadores/$($ind.script)"
+    python "ocde/indicadores/$($ind.script)"
     if ($LASTEXITCODE -ne 0) {
         $erros += $ind.nome
         Write-Host "  ERRO no $($ind.nome)" -ForegroundColor Red
@@ -217,12 +217,12 @@ artefatos_local\entregas\2026-06\
 Execute os 6 indicadores baseados em Plano de Trabalho:
 
 ```powershell
-python scripts/indicadores/IND_01.1_run.py
-python scripts/indicadores/IND_05.1_run.py
-python scripts/indicadores/IND_06.1_run.py
-python scripts/indicadores/IND_09.1_run.py
-python scripts/indicadores/IND_10.1_run.py
-python scripts/indicadores/IND_11.1_run.py
+python ocde/indicadores/IND_01.1_run.py
+python ocde/indicadores/IND_05.1_run.py
+python ocde/indicadores/IND_06.1_run.py
+python ocde/indicadores/IND_09.1_run.py
+python ocde/indicadores/IND_10.1_run.py
+python ocde/indicadores/IND_11.1_run.py
 ```
 
 ### 6c. Meses com todos os indicadores — maio, setembro e janeiro (3 meses no ano)
@@ -231,26 +231,26 @@ Execute os 12 indicadores na ordem abaixo (PT primeiro, PE depois):
 
 ```powershell
 # PT mensais
-python scripts/indicadores/IND_01.1_run.py
-python scripts/indicadores/IND_05.1_run.py
-python scripts/indicadores/IND_06.1_run.py
-python scripts/indicadores/IND_09.1_run.py
-python scripts/indicadores/IND_10.1_run.py
-python scripts/indicadores/IND_11.1_run.py
+python ocde/indicadores/IND_01.1_run.py
+python ocde/indicadores/IND_05.1_run.py
+python ocde/indicadores/IND_06.1_run.py
+python ocde/indicadores/IND_09.1_run.py
+python ocde/indicadores/IND_10.1_run.py
+python ocde/indicadores/IND_11.1_run.py
 
 # PE quadrimestrais
-python scripts/indicadores/IND_02.1_run.py
-python scripts/indicadores/IND_03.1_run.py
-python scripts/indicadores/IND_04.1_run.py
-python scripts/indicadores/IND_07.1_run.py
-python scripts/indicadores/IND_08.1_run.py
-python scripts/indicadores/IND_12.1_run.py
+python ocde/indicadores/IND_02.1_run.py
+python ocde/indicadores/IND_03.1_run.py
+python ocde/indicadores/IND_04.1_run.py
+python ocde/indicadores/IND_07.1_run.py
+python ocde/indicadores/IND_08.1_run.py
+python ocde/indicadores/IND_12.1_run.py
 ```
 
 Para forçar uma pasta de destino específica (útil para retroativos):
 
 ```powershell
-python scripts/indicadores/IND_02.1_run.py --month 2026-05
+python ocde/indicadores/IND_02.1_run.py --month 2026-05
 ```
 
 ### 6d. Executar um indicador específico
@@ -266,18 +266,18 @@ Depois execute o indicador desejado:
 
 | Indicador | Comando | O que mostra |
 |-----------|---------|-------------|
-| **I01** | `python scripts/indicadores/IND_01.1_run.py` | Gera 2 arquivos: resumo nacional + detalhamento por unidade |
-| **I02** | `python scripts/indicadores/IND_02.1_run.py` | % das entregas de cada unidade concluídas no período |
-| **I03** | `python scripts/indicadores/IND_03.1_run.py` | Status de cada entrega individual (concluída / em andamento / não iniciada) |
-| **I04** | `python scripts/indicadores/IND_04.1_run.py` | Score médio de atingimento das metas por unidade (0 a 100+) |
-| **I05** | `python scripts/indicadores/IND_05.1_run.py` | Quantas entregas cada servidor está responsável por unidade |
-| **I06** | `python scripts/indicadores/IND_06.1_run.py` | Quantos servidores compartilham cada entrega e com que % de força de trabalho |
-| **I07** | `python scripts/indicadores/IND_07.1_run.py` | Total de horas planejadas para cada entrega em cada unidade |
-| **I08** | `python scripts/indicadores/IND_08.1_run.py` | % da capacidade total da unidade alocado em cada entrega |
-| **I09** | `python scripts/indicadores/IND_09.1_run.py` | Nota média (1 a 5) das avaliações dos servidores por unidade |
-| **I10** | `python scripts/indicadores/IND_10.1_run.py` | % das avaliações com nota "Inadequado" por unidade |
-| **I11** | `python scripts/indicadores/IND_11.1_run.py` | % das avaliações com nota "Excepcional" por unidade |
-| **I12** | `python scripts/indicadores/IND_12.1_run.py` | Se a avaliação individual (PT) está alinhada com a avaliação coletiva (PE) da unidade |
+| **I01** | `python ocde/indicadores/IND_01.1_run.py` | Gera 2 arquivos: resumo nacional + detalhamento por unidade |
+| **I02** | `python ocde/indicadores/IND_02.1_run.py` | % das entregas de cada unidade concluídas no período |
+| **I03** | `python ocde/indicadores/IND_03.1_run.py` | Status de cada entrega individual (concluída / em andamento / não iniciada) |
+| **I04** | `python ocde/indicadores/IND_04.1_run.py` | Score médio de atingimento das metas por unidade (0 a 100+) |
+| **I05** | `python ocde/indicadores/IND_05.1_run.py` | Quantas entregas cada servidor está responsável por unidade |
+| **I06** | `python ocde/indicadores/IND_06.1_run.py` | Quantos servidores compartilham cada entrega e com que % de força de trabalho |
+| **I07** | `python ocde/indicadores/IND_07.1_run.py` | Total de horas planejadas para cada entrega em cada unidade |
+| **I08** | `python ocde/indicadores/IND_08.1_run.py` | % da capacidade total da unidade alocado em cada entrega |
+| **I09** | `python ocde/indicadores/IND_09.1_run.py` | Nota média (1 a 5) das avaliações dos servidores por unidade |
+| **I10** | `python ocde/indicadores/IND_10.1_run.py` | % das avaliações com nota "Inadequado" por unidade |
+| **I11** | `python ocde/indicadores/IND_11.1_run.py` | % das avaliações com nota "Excepcional" por unidade |
+| **I12** | `python ocde/indicadores/IND_12.1_run.py` | Se a avaliação individual (PT) está alinhada com a avaliação coletiva (PE) da unidade |
 
 Os CSVs são salvos em `artefatos_local/entregas/AAAA-MM/`.
 
@@ -336,8 +336,8 @@ Arquivos públicos do repositório:
 
 ```text
 docs/                         documentação pública
-scripts/indicadores/          executores IND_XX.1_run.py
-scripts/lib/                  funções comuns sem credenciais
+ocde/indicadores/          executores IND_XX.1_run.py
+lib/                  funções comuns sem credenciais
 ```
 
 Arquivos locais, **nunca versionados** (estrutura vigente desde 17.06.2026):
@@ -359,7 +359,7 @@ artefatos_local/
   historico/              Artefatos legados (dump e validação inicial mai/2026)
 ```
 
-Os caminhos são gerenciados por `scripts/lib/csv_utils.py`:
+Os caminhos são gerenciados por `lib/csv_utils.py`:
 
 - `indicator_csv_dir()` → `artefatos_local/entregas/AAAA-MM/`
 - `diagnostic_csv_dir()` → `artefatos_local/diagnosticos/AAAA-MM/`
@@ -467,7 +467,7 @@ no PETRVS), ou filtro temporal sem correspondência nos dados.
 **Como verificar:**
 
 ```powershell
-python scripts/indicadores/IND_XX.1_run.py --dry-run
+python ocde/indicadores/IND_XX.1_run.py --dry-run
 ```
 
 Isso mostra o que seria executado sem conectar ao Denodo.
@@ -514,7 +514,7 @@ Adapte substituindo `XX` pelo número do indicador e `ERRO` pela mensagem real.
 **Executar a extração mensal completa:**
 ```
 Execute a extração mensal completa dos 12 indicadores OCDE. Rode todos os scripts em
-scripts/indicadores/ em sequência, registre os resultados (linhas geradas por período e
+ocde/indicadores/ em sequência, registre os resultados (linhas geradas por período e
 por indicador) e me informe quais funcionaram e quais falharam. Se houver erros, diagnostique
 a causa com base no CLAUDE.md e nos logs.
 ```
@@ -565,7 +565,7 @@ Explique o que significa e sugira como corrigir considerando que o banco é Deno
 
 **Gerar um script de verificação rápida:**
 ```
-@workspace Baseando-se nos scripts em scripts/indicadores/ e em scripts/lib/, crie um script
+@workspace Baseando-se nos scripts em ocde/indicadores/ e em lib/, crie um script
 Python chamado verificar_csvs.py que: (1) liste todos os CSVs em artefatos_local/entregas/[mês
 atual]/; (2) para cada CSV, mostre nome, número de linhas e colunas; (3) alerte se algum CSV
 tiver 0 linhas. Use delimitador pipe (|) e encoding utf-8-sig.
@@ -601,7 +601,7 @@ Query MySQL original:
 Quando houver validação pela equipe CGOV:
 
 - salve PDFs de consulta PETRVS em `artefatos_local/validacao/`
-- copie `scripts/diagnosticos/IND_XX.4_diagnostico_template.py` para
+- copie `ocde/diagnosticos/IND_XX.4_diagnostico_template.py` para
   `artefatos_local/diagnosticos/` e preencha as queries locais
 - salve CSVs diagnósticos em `artefatos_local/diagnosticos/AAAA-MM/`
 - salve relatórios internos em `artefatos_local/validacao/`
@@ -641,5 +641,5 @@ Dois problemas foram corrigidos durante a preparação para produção:
 
 2. **I09/I10/I11/I12 — `json_unquote()` inexistente no Denodo:** as queries usavam
    `JSON_UNQUOTE(tan.nota)`. Removido automaticamente na camada de adaptação
-   (`adapt_for_jdbc` em `scripts/lib/docs_sql.py`), mantendo o
+   (`adapt_for_jdbc` em `lib/docs_sql.py`), mantendo o
    `TRIM(BOTH '"' FROM ...)` externo que já faz a remoção de aspas quando necessário.

@@ -130,7 +130,7 @@ def month_periods(first: date, last: date):
         current = date(year, month, 1)
 
 
-def run_i01(doc_path: str = "docs/06.1.1-i01.md") -> None:
+def run_i01(doc_path: str = "docs/ocde/06.1.1-i01.md") -> None:
     args = parse_args("Executa indicador I01 e gera CSVs mensais.")
     sql = adapt_for_jdbc(extract_indicator_sql(doc_path, "01"))
     out_dir = indicator_csv_dir(args.month)
