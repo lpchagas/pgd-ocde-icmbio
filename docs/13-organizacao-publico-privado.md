@@ -110,7 +110,7 @@ O ícone do OneDrive na bandeja do sistema deve mostrar sincronização concluí
 ### Passo 3 — Criar as pontes
 
 ```powershell
-.\scripts\setup_local\criar_links_privados.ps1
+.\setup\criar_links_privados.ps1
 ```
 
 Este script cria as Junctions e HardLinks que conectam o projeto ao OneDrive. Só precisa ser executado uma vez por computador.
@@ -118,7 +118,7 @@ Este script cria as Junctions e HardLinks que conectam o projeto ao OneDrive. S�
 ### Passo 4 — Gerar o `.env` desta máquina
 
 ```powershell
-.\scripts\setup_local\configurar_env.ps1
+.\setup\configurar_env.ps1
 ```
 
 O script detecta automaticamente o nome de usuário Windows e o caminho do driver Denodo instalado pelo DBeaver. Ao final, abre instruções para você preencher apenas CPF e senha.

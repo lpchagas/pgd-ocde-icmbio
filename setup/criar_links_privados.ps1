@@ -9,7 +9,7 @@
 #   - Quando as pastas do projeto aparecerem vazias apos clonar o repositorio
 #
 # Como executar (PowerShell na raiz do projeto):
-#   .\scripts\setup_local\criar_links_privados.ps1
+#   .\setup\criar_links_privados.ps1
 #
 # Nao e necessario rodar como Administrador para Junctions.
 # Para HardLinks (arquivos .md), tambem nao e necessario — funciona porque
@@ -33,7 +33,7 @@ $ErrorActionPreference = "Stop"
 # ------------------------------------------------------------------
 # CONFIGURACAO — ajuste se a pasta privada estiver em local diferente
 # ------------------------------------------------------------------
-$PUBLICO = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$PUBLICO = Split-Path -Parent $PSScriptRoot
 $PRIVADO = Join-Path $env:USERPROFILE "OneDrive - ICMBio\projetos\pgd-ocde-icmbio-privado"
 
 # Descomentar e ajustar se o OneDrive tiver nome diferente nesta maquina:

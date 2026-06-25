@@ -9,7 +9,7 @@
 #   - Quando o .env estiver com caminho errado apos trocar de maquina
 #
 # Como executar (PowerShell na raiz do projeto):
-#   .\scripts\setup_local\configurar_env.ps1
+#   .\setup\configurar_env.ps1
 #
 # Nao e necessario rodar como Administrador.
 # =============================================================================
@@ -17,7 +17,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$PROJETO = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$PROJETO = Split-Path -Parent $PSScriptRoot
 $ENV_DESTINO = Join-Path $PROJETO ".env"
 
 Write-Host ""
