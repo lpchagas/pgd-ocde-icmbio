@@ -117,6 +117,11 @@ desktop.ini
 $RECYCLE.BIN/
 
 # -----------------------------------------------------------------------------
+# Documentos de planejamento interno (arquitetura, roadmap, decisões técnicas)
+# -----------------------------------------------------------------------------
+plano_estrutura_projeto.md
+
+# -----------------------------------------------------------------------------
 # Pasta aninhada criada em sessão anterior (pode ser deletada manualmente)
 # -----------------------------------------------------------------------------
 /DM_Petrvs_icmbio_mysql/

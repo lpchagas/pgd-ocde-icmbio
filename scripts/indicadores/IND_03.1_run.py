@@ -287,6 +287,7 @@ def main() -> None:
         )
     print()
 
+    print(f"{len(all_rows)} linhas retornadas.")
     print(f"Total: {len(all_rows)} entregas | {len(periods)} periodos")
     print("AVISO: ciclo_tipo='trimestral' (2025) e 'quadrimestral' (2026+).")
     print("Nao compare taxas entre anos por periodo — use totais anuais.")
