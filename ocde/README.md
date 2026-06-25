@@ -1,4 +1,4 @@
-# Scripts Python — Extração e Análise dos Indicadores OCDE/ICMBio
+# ocde/ — Extração e Análise dos Indicadores OCDE/ICMBio
 
 Esta pasta reúne os scripts Python que automatizam a extração mensal dos 12 indicadores
 do PGD do ICMBio a partir do banco PETRVS, via conexão em tempo real com o Denodo
@@ -7,6 +7,9 @@ do PGD do ICMBio a partir do banco PETRVS, via conexão em tempo real com o Deno
 Os scripts são **públicos e sanitizados**: não contêm CPF, senhas, caminhos pessoais
 nem dados extraídos do PETRVS. As credenciais ficam em um arquivo `.env` local,
 que nunca é versionado.
+
+Os módulos compartilhados ficam em `lib/` (raiz do repositório), reutilizáveis por
+todas as iniciativas (OCDE, MGI etc.).
 
 ---
 
@@ -24,7 +27,7 @@ Em linguagem de negócio, os scripts realizam três tarefas:
 3. **Geram relatórios gerenciais em Markdown** com semáforos (🟢 🟡 🔴), rankings
    de unidades, tendências e recomendações interpretativas por eixo.
 
-O resultado final são arquivos CSV salvos em `artefatos_local/entregas/AAAA-MM/`,
+O resultado final são arquivos CSV salvos em `artefatos_local/ocde/entregas/AAAA-MM/`,
 prontos para envio à COCAGE ou importação no Power BI.
 
 ---
@@ -32,11 +35,18 @@ prontos para envio à COCAGE ou importação no Power BI.
 ## Estrutura de pastas
 
 ```text
-scripts/
+ocde/
   indicadores/          Um script por indicador (IND_01 a IND_12)
   relatorios/           Módulos para análise e geração de relatórios gerenciais
   diagnosticos/         Template de diagnóstico para investigações pontuais
-  lib/                  Módulos compartilhados (conexão, períodos, CSV, auditoria)
+
+lib/                    Módulos compartilhados (raiz do repositório)
+  denodo_config.py      Leitura do .env e conexão JDBC
+  periodos.py           build_periods_pe() e build_periods_pt()
+  csv_utils.py          clean(), delimitador pipe, pastas de saída automáticas
+  auditoria.py          Verificação automática do CSV gerado
+  monthly_runner.py     Motor de execução dos scripts
+  docs_sql.py           Extração da SQL canônica dos docs
 ```
 
 ---
@@ -47,7 +57,7 @@ Cada arquivo `IND_XX.1_run.py` extrai um indicador específico e gera um CSV men
 São executados uma vez por mês, seguindo o calendário em `docs/11-guia-extracao-mensal.md`.
 
 | Script | Indicador | O que mede | Periodicidade 2026 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `IND_01.1_run.py` | I01 — Regime de Trabalho | Proporção de servidores presencial / híbrido / remoto por unidade | Mensal |
 | `IND_02.1_run.py` | I02 — Cumprimento de Entregas | % de entregas concluídas em relação às planejadas por unidade | Quadrimestral |
 | `IND_03.1_run.py` | I03 — Atingimento por Entrega | % de atingimento da meta para cada entrega individualmente | Quadrimestral |
@@ -88,6 +98,7 @@ Cada período recebe o rótulo correto (`T1-2025`, `Q2-2026`, `M06-2026`) e o st
 `encerrado` ou `em_andamento`, que aparece no CSV de saída.
 
 Duas funções principais:
+
 - `build_periods_pe()` — para indicadores baseados em Plano de Entrega (I02, I03, I04, I07, I08, I12)
 - `build_periods_pt()` — para indicadores baseados em Plano de Trabalho (I01, I05, I06, I09, I10, I11)
 
@@ -100,8 +111,8 @@ Cuida dos detalhes que corrompem planilhas:
 - **Usa pipe (`|`) como separador** em vez de vírgula ou ponto-e-vírgula, que aparecem
   com frequência nos textos administrativos do PETRVS e corrompem a estrutura do arquivo.
 - **Salva com BOM UTF-8** para que o Excel abra os acentos corretamente sem conversão manual.
-- **Cria automaticamente** as pastas `artefatos_local/entregas/AAAA-MM/` e
-  `artefatos_local/diagnosticos/AAAA-MM/` se ainda não existirem.
+- **Cria automaticamente** as pastas `artefatos_local/ocde/entregas/AAAA-MM/` e
+  `artefatos_local/ocde/diagnosticos/AAAA-MM/` se ainda não existirem.
 
 ### `auditoria.py` — Verificação automática do CSV gerado
 
@@ -117,11 +128,9 @@ execução por período, adição das colunas de metadado de período, salvament
 e chamada à auditoria. Os scripts `IND_XX.1_run.py` delegam toda essa mecânica
 ao `monthly_runner`, mantendo-se enxutos e focados apenas na SQL do indicador.
 
-Também implementa o modo `--dry-run` (ver seção "Como executar" abaixo).
-
 ### `docs_sql.py` — Extração da SQL canônica dos documentos
 
-Lê a SQL de referência de cada indicador diretamente dos arquivos `docs/06.X.X-iXX.md`
+Lê a SQL de referência de cada indicador diretamente dos arquivos `docs/ocde/06.X.X-iXX.md`
 e a adapta automaticamente para funcionar via conexão JDBC com o Denodo:
 
 - Adiciona o prefixo obrigatório `petrvs_icmbio_` nos nomes de tabela.
@@ -141,7 +150,7 @@ São usados pelas skills `/relatorio-gerencial`, `/sumario-executivo` e similare
 
 ### `loader.py` — Carregamento dos CSVs
 
-Localiza os CSVs mais recentes na pasta `artefatos_local/entregas/AAAA-MM/`,
+Localiza os CSVs mais recentes em `artefatos_local/ocde/entregas/AAAA-MM/`,
 carrega cada indicador como uma tabela estruturada e converte as colunas numéricas
 para o tipo correto. Permite filtrar por unidade (ex: "CGOV", "GR3") ou trabalhar
 com a visão nacional completa.
@@ -160,7 +169,7 @@ Aplica os limiares definidos pela CGOV/ICMBio para classificar cada indicador co
 Limiares configurados:
 
 | Indicador | Verde | Amarelo | Lógica |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | I02 — Cumprimento | ≥ 80% | ≥ 60% | Maior = melhor |
 | I04 — Score de atingimento | ≥ 80% | ≥ 60% | Maior = melhor |
 | I06 — Concentração | ≤ 30% | ≤ 50% | Menor = melhor |
@@ -195,7 +204,7 @@ O arquivo `IND_XX.4_diagnostico_template.py` é um modelo de script para investi
 pontuais, usado quando a equipe CGOV retorna observações após a validação manual no
 PETRVS (artefato A4 do protocolo de validação).
 
-Cada diagnóstico gera CSVs intermediários salvos em `artefatos_local/diagnosticos/`,
+Cada diagnóstico gera CSVs intermediários salvos em `artefatos_local/ocde/diagnosticos/`,
 separados dos CSVs de entrega, para uso interno sem risco de envio acidental à COCAGE.
 
 ---
@@ -224,16 +233,7 @@ python ocde/indicadores/IND_02.1_run.py
 
 O script conecta ao Denodo, executa a consulta para cada período histórico,
 adiciona as colunas de metadado (tipo de ciclo, rótulo, datas, status, duração)
-e salva o CSV em `artefatos_local/entregas/AAAA-MM/`.
-
-### Validar configuração sem conectar ao Denodo
-
-```powershell
-python ocde/indicadores/IND_02.1_run.py --dry-run
-```
-
-Exibe o destino do arquivo e as primeiras linhas da SQL que seria executada,
-sem abrir nenhuma conexão. Útil para verificar se o `.env` está correto.
+e salva o CSV em `artefatos_local/ocde/entregas/AAAA-MM/`.
 
 ### Especificar a pasta de destino
 
@@ -248,7 +248,7 @@ Por padrão, o script usa o mês atual. Use `--month` para gerar em uma pasta es
 ## Periodicidade por indicador
 
 | Instrumento | Indicadores | Ciclo 2025 | Ciclo 2026 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Plano de Entrega (PE) | I02, I03, I04, I07, I08, I12 | Trimestral (T1–T4) | Quadrimestral (Q1–Q3) |
 | Plano de Trabalho (PT) | I01, I05, I06, I09, I10, I11 | Trimestral (T1–T4) | Mensal (M01–M12) |
 
@@ -259,21 +259,21 @@ Calendário completo de execução mensal: `docs/11-guia-extracao-mensal.md`
 ## Onde os arquivos são salvos
 
 | Tipo de arquivo | Pasta | Quem usa |
-|---|---|---|
-| CSVs de indicadores (entrega) | `artefatos_local/entregas/AAAA-MM/` | COCAGE, Power BI |
-| CSVs diagnósticos (uso interno) | `artefatos_local/diagnosticos/AAAA-MM/` | Equipe técnica |
-| Scripts de diagnóstico (A4) | `artefatos_local/diagnosticos/` | Equipe técnica |
+| --- | --- | --- |
+| CSVs de indicadores (entrega) | `artefatos_local/ocde/entregas/AAAA-MM/` | COCAGE, Power BI |
+| CSVs diagnósticos (uso interno) | `artefatos_local/ocde/diagnosticos/AAAA-MM/` | Equipe técnica |
+| Scripts de diagnóstico (A4) | `artefatos_local/ocde/diagnosticos/` | Equipe técnica |
 | Relatórios de validação (A5) | `artefatos_local/validacao/` | CGOV, auditoria |
 
-A pasta `artefatos_local/` é **exclusivamente local** — está no `.gitignore` e
-nunca é versionada. Isso protege os dados dos servidores e as credenciais de acesso.
+A pasta `artefatos_local/` é **exclusivamente local e privada** — está no `.gitignore` e
+sincronizada via OneDrive. Nunca é versionada no GitHub.
 
 ---
 
 ## Regras de segurança
 
 - Nunca grave credenciais (CPF, senha, token) nesta pasta.
-- Nunca salve CSV, PDF ou relatório em `scripts/` — use `artefatos_local/`.
+- Nunca salve CSV, PDF ou relatório dentro de `ocde/` — use `artefatos_local/`.
 - Antes de qualquer `git push`, execute o checklist em `docs/12-seguranca-publicacao.md`.
 - Os scripts desta pasta são seguros para compartilhar com outros órgãos da APF
   que utilizem PETRVS + Denodo — esta é uma das finalidades do repositório.
