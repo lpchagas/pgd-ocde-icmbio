@@ -74,8 +74,8 @@ Se aparecer qualquer arquivo em `artefatos_local/`, `.env`, `.claude/`,
 
 Scripts em `scripts/` devem:
 
-- ler credenciais somente de `.env` via `scripts/lib/denodo_config.py`;
-- usar helpers de `scripts/lib/`;
+- ler credenciais somente de `.env` via `lib/denodo_config.py`;
+- usar helpers de `lib/`;
 - salvar saídas em `artefatos_local/` (nunca em `scripts/`);
 - aceitar `--dry-run` para validar configuração sem conectar ao Denodo;
 - não conter CPF, senha ou caminho local pessoal;

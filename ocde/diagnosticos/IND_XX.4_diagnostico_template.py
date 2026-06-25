@@ -7,7 +7,8 @@ somente do .env local.
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+ROOT = next(p for p in Path(__file__).resolve().parents if (p / "lib" / "__init__.py").exists())
+sys.path.insert(0, str(ROOT))
 
 from lib.csv_utils import diagnostic_csv_dir, write_pipe_csv
 from lib.denodo_config import connect, get_config

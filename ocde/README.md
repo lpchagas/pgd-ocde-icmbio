@@ -219,7 +219,7 @@ Guia detalhado: `docs/10-jupyter-guia-iniciantes.md`
 ### Executar um indicador
 
 ```powershell
-python scripts/indicadores/IND_02.1_run.py
+python ocde/indicadores/IND_02.1_run.py
 ```
 
 O script conecta ao Denodo, executa a consulta para cada período histórico,
@@ -229,7 +229,7 @@ e salva o CSV em `artefatos_local/entregas/AAAA-MM/`.
 ### Validar configuração sem conectar ao Denodo
 
 ```powershell
-python scripts/indicadores/IND_02.1_run.py --dry-run
+python ocde/indicadores/IND_02.1_run.py --dry-run
 ```
 
 Exibe o destino do arquivo e as primeiras linhas da SQL que seria executada,
@@ -238,7 +238,7 @@ sem abrir nenhuma conexão. Útil para verificar se o `.env` está correto.
 ### Especificar a pasta de destino
 
 ```powershell
-python scripts/indicadores/IND_02.1_run.py --month 2026-06
+python ocde/indicadores/IND_02.1_run.py --month 2026-06
 ```
 
 Por padrão, o script usa o mês atual. Use `--month` para gerar em uma pasta específica.

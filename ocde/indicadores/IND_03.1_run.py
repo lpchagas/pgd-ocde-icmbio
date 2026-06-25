@@ -37,7 +37,8 @@ from datetime import datetime
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+ROOT = next(p for p in Path(__file__).resolve().parents if (p / "lib" / "__init__.py").exists())
+sys.path.insert(0, str(ROOT))
 
 from lib.csv_utils import indicator_csv_dir, write_pipe_csv
 from lib.denodo_config import connect, get_config
@@ -287,6 +288,7 @@ def main() -> None:
         )
     print()
 
+    print(f"{len(all_rows)} linhas retornadas.")
     print(f"Total: {len(all_rows)} entregas | {len(periods)} periodos")
     print("AVISO: ciclo_tipo='trimestral' (2025) e 'quadrimestral' (2026+).")
     print("Nao compare taxas entre anos por periodo — use totais anuais.")

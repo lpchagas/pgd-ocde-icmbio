@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Iterable, Sequence
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def clean(value: object, default: str = "") -> str:

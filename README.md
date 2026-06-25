@@ -77,15 +77,15 @@ Guia completo para quem nunca usou Python: [docs/10-jupyter-guia-iniciantes.md](
 
 ### Para rotina mensal — Scripts Python sanitizados
 
-Os scripts publicos em `scripts/indicadores/` geram os CSVs mensais dos
+Os scripts publicos em `ocde/indicadores/` geram os CSVs mensais dos
 indicadores sem armazenar credenciais no codigo. Eles leem a conexao do arquivo
 local `.env` e salvam as saidas em `artefatos_local/`, pasta ignorada pelo git.
 
 Exemplo:
 
 ```powershell
-python scripts/indicadores/IND_02.1_run.py --dry-run
-python scripts/indicadores/IND_02.1_run.py
+python ocde/indicadores/IND_02.1_run.py --dry-run
+python ocde/indicadores/IND_02.1_run.py
 ```
 
 Fluxo completo: [docs/11-guia-extracao-mensal.md](docs/11-guia-extracao-mensal.md)

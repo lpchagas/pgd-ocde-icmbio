@@ -20,7 +20,7 @@ Cada ciclo produz até cinco artefatos. O padrão de nomenclatura é `IND_XX.N_<
 
 | # | Artefato | Nomenclatura padrão | Pasta |
 |---|---|---|---|
-| A1 | Script de geração (sanitizado) | `IND_XX.1_run.py` | `scripts/indicadores/` |
+| A1 | Script de geração (sanitizado) | `IND_XX.1_run.py` | `ocde/indicadores/` |
 | A2 | Tabela de resultado (CSV) | `IND_XX.2_<nome>_AAAAMMDD_HHMM.csv` | `artefatos_local/entregas/YYYY-MM/` |
 | A3 | Consulta manual PETRVS (PDF) | `IND_XX.3_PETRVS_consulta_DD.MM.AAAA.pdf` | `artefatos_local/validacao/` |
 | A4 | Script diagnóstico | `IND_XX.4_diagnostico_DD.MM.AAAA.py` | `artefatos_local/diagnosticos/` |
@@ -28,7 +28,7 @@ Cada ciclo produz até cinco artefatos. O padrão de nomenclatura é `IND_XX.N_<
 
 **Notas:**
 
-- **A1 — script canônico:** armazenado em `scripts/indicadores/` (público, sem credenciais — lê conexão do `.env`). Cópias de backup local em `artefatos_local/backup_scripts_a1/`.
+- **A1 — script canônico:** armazenado em `ocde/indicadores/` (público, sem credenciais — lê conexão do `.env`). Cópias de backup local em `artefatos_local/backup_scripts_a1/`.
 - **A2 — múltiplas versões:** quando o indicador produz mais de uma tabela (ex: visão resumida + detalhada), usar prefixo `v1_`, `v2_` antes da descrição: `IND_XX.2_v1_<nome>_AAAAMMDD_HHMM.csv`.
 - **A4 — CSVs intermediários:** gerados pelo script A4 e salvos em `artefatos_local/diagnosticos/YYYY-MM/` com padrão `IND_XX.4_qN_<descricao>.csv`.
 - **Todos os artefatos em `artefatos_local/` são mantidos apenas localmente** — a pasta está no `.gitignore`. Contêm dados operacionais do ICMBio e registros internos da CGOV.
@@ -49,7 +49,7 @@ Geração        →   Validação manual  →   Diagnóstico técnico   →   C
 **Responsável:** analista técnico
 
 1. Ler o documento do indicador em `docs/06.X.X-iXX.md` e identificar a query SQL canônica (`SQL_IXX`).
-2. Criar `IND_XX.1_run.py` em `scripts/indicadores/` seguindo o modelo canônico (ver Seção 4.1 e `scripts/indicadores/IND_02.1_run.py`).
+2. Criar `IND_XX.1_run.py` em `ocde/indicadores/` seguindo o modelo canônico (ver Seção 4.1 e `ocde/indicadores/IND_02.1_run.py`).
 3. Executar o script. Verificar:
    - Número de linhas plausível (não zero, não absurdamente alto)
    - Nenhuma coluna retornou apenas nulos
@@ -106,7 +106,7 @@ Geração        →   Validação manual  →   Diagnóstico técnico   →   C
 
 **Responsável:** analista técnico
 
-1. **Se bug:** corrigir a query em `docs/06.X.X-iXX.md` e em `Consultas SQL/*.sql`. Atualizar `scripts/indicadores/IND_XX.1_run.py`. Re-executar e regenerar o CSV A2.
+1. **Se bug:** corrigir a query em `docs/06.X.X-iXX.md` e em `Consultas SQL/*.sql`. Atualizar `ocde/indicadores/IND_XX.1_run.py`. Re-executar e regenerar o CSV A2.
 2. **Se decisão metodológica:** implementar a abordagem acordada. Atualizar o script A1 com novas colunas. Regenerar o CSV A2.
 3. **Sempre:** atualizar `docs/06.X.X-iXX.md` com:
    - Novas colunas no resultado
@@ -122,7 +122,7 @@ Geração        →   Validação manual  →   Diagnóstico técnico   →   C
 
 ### 4.1 Estrutura obrigatória do script de geração (A1)
 
-O script de geração segue a estrutura padronizada definida em `CLAUDE.md` Seção 14. O modelo canônico público é `scripts/indicadores/IND_02.1_run.py`.
+O script de geração segue a estrutura padronizada definida em `CLAUDE.md` Seção 14. O modelo canônico público é `ocde/indicadores/IND_02.1_run.py`.
 
 **Elementos obrigatórios:**
 
@@ -137,7 +137,7 @@ import jpype, jpype.imports
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 # Configuração de conexão lida do arquivo .env (nunca versionado)
-# — ver scripts/lib/denodo_config.py para implementação completa
+# — ver lib/denodo_config.py para implementação completa
 from scripts.lib.denodo_config import get_connection_params
 JAR, JVM_DLL, JDBC_URL, USER, PASS = get_connection_params()
 
@@ -164,13 +164,13 @@ def build_periods_pe():
     """Ciclo PE: 2025 trimestral | 2026+ quadrimestral.
     Usar para: I02, I03, I04, I07, I08, I12.
     """
-    # Ver implementação completa em scripts/indicadores/IND_02.1_run.py
+    # Ver implementação completa em ocde/indicadores/IND_02.1_run.py
 
 def build_periods_pt():
     """Ciclo PT: 2025 trimestral | 2026+ mensal.
     Usar para: I01, I05, I06, I09, I10, I11.
     """
-    # Ver implementação completa em scripts/indicadores/IND_05.1_run.py
+    # Ver implementação completa em ocde/indicadores/IND_05.1_run.py
 
 def clean(val):
     """Remove quebras de linha internas que corrompem células CSV."""
@@ -329,7 +329,7 @@ O arquivo `IND_XX.5_relatorio_validacao_DD.MM.AAAA.md` deve seguir esta estrutur
 ## 8. Arquivos gerados
 | Artefato | Arquivo | Local |
 |---|---|---|
-| A1 | IND_XX.1_run.py | scripts/indicadores/ |
+| A1 | IND_XX.1_run.py | ocde/indicadores/ |
 | A2 | IND_XX.2_<nome>_AAAAMMDD_HHMM.csv | artefatos_local/entregas/YYYY-MM/ |
 | A3 | IND_XX.3_PETRVS_consulta_DD.MM.AAAA.pdf | artefatos_local/validacao/ |
 | A4 | IND_XX.4_diagnostico_DD.MM.AAAA.py | artefatos_local/diagnosticos/ |
@@ -583,7 +583,7 @@ Unidades   : <siglas amostradas>
 Data início: DD/MM/AAAA
 
 ─── Fase 1 — Geração ────────────────────────────────────────────
-[ ] A1 — IND_XX.1_run.py criado em scripts/indicadores/ e executado sem erros
+[ ] A1 — IND_XX.1_run.py criado em ocde/indicadores/ e executado sem erros
 [ ] A2 — IND_XX.2_<nome>_AAAAMMDD_HHMM.csv gerado em artefatos_local/entregas/YYYY-MM/
 [ ] 6 colunas de metadado de período presentes (ciclo_tipo, periodo, ...)
 [ ] Verificação inicial: sem zeros em massa, sem NULLs inesperados, nenhum período vazio
@@ -609,7 +609,7 @@ Data início: DD/MM/AAAA
 ─── Fase 4 — Correções e documentação ───────────────────────────
 [ ] Correção aplicada em docs/06.X.X-iXX.md (se bug ou decisão metodológica)
 [ ] Consultas SQL/*.sql atualizados (se correção)
-[ ] IND_XX.1_run.py atualizado em scripts/indicadores/ (se decisão metodológica)
+[ ] IND_XX.1_run.py atualizado em ocde/indicadores/ (se decisão metodológica)
 [ ] A2 regenerado após correções
 [ ] CLAUDE.md — Seção 11 atualizada com status ✅
 
@@ -697,7 +697,7 @@ A query OCDE está correta; a diferença é semântica, não um bug. O campo `ho
 
 ## 9. Referências de implementação
 
-**Modelos de script de geração (em `scripts/indicadores/`):**
+**Modelos de script de geração (em `ocde/indicadores/`):**
 
 | Script | Complexidade | Referência para |
 |---|---|---|
