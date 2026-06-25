@@ -1,6 +1,6 @@
 """Template publico sanitizado para diagnosticos de validacao.
 
-Copie este arquivo para artefatos_local/denodo/AAAA-MM/validacao/diagnosticos/
+Copie este arquivo para artefatos_local/ocde/diagnosticos/AAAA-MM/
 antes de preencher consultas diagnosticas especificas. Credenciais devem vir
 somente do .env local.
 """

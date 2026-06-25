@@ -8,7 +8,7 @@ from typing import Optional
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-ENTREGAS_BASE = ROOT / "artefatos_local" / "entregas"
+ENTREGAS_BASE = ROOT / "artefatos_local" / "ocde" / "entregas"
 
 
 def periodo_sort_key(label: str) -> tuple[int, int]:

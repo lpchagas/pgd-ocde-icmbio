@@ -12,6 +12,7 @@ A separação garante que:
 - **A metodologia e os scripts** sejam compartilháveis com outros órgãos — ficam no GitHub
 - **Suas credenciais de acesso** (CPF e senha do Denodo) jamais apareçam online
 - **Os dados extraídos** (CSVs com nomes de unidades e servidores) fiquem fora do repositório
+- **As análises internas da CGOV** (ad-hoc, contexto institucional específico) fiquem restritas ao OneDrive
 - **O contexto dos assistentes de IA** (CLAUDE.md, AGENTS.md etc.) — que contém credenciais e caminhos locais — não seja publicado
 
 ---
@@ -20,19 +21,28 @@ A separação garante que:
 
 ### Repositório público (GitHub — `pgd-ocde-icmbio`)
 
-Tudo aqui é **versionado e publicável**. Não contém dados pessoais nem senhas.
+Tudo aqui é **versionado e publicável**. Não contém dados pessoais, senhas nem análises internas.
 
 ```
 C:\Projetos\pgd-ocde-icmbio\
 ├── docs/                         Documentação técnica e de negócio
-├── scripts/
-│   ├── indicadores/              Scripts Python sanitizados (sem credenciais)
-│   ├── lib/                      Módulos compartilhados
-│   ├── diagnosticos/             Templates de diagnóstico
-│   ├── relatorios/               Módulos de relatório gerencial
-│   └── setup_local/              Scripts de configuração de ambiente
-│       ├── configurar_env.ps1    Gera .env com caminhos desta máquina
-│       └── criar_links_privados.ps1  Recria as pontes em um novo computador
+│   ├── 01–13 *.md                Documentos compartilhados do projeto
+│   ├── ocde/                     Fichas técnicas dos 12 indicadores OCDE (I01–I12)
+│   ├── mgi/                      Documentação MGI (em construção)
+│   └── cgov/                     Placeholder público (sem análises — apenas README)
+├── lib/                          Módulos Python compartilhados
+│   ├── denodo_config.py          Leitura do .env e conexão JDBC
+│   ├── periodos.py               build_periods_pe() e build_periods_pt()
+│   ├── csv_utils.py              clean(), delimitador pipe
+│   ├── auditoria.py              Avisos de qualidade de dados
+│   ├── monthly_runner.py         Loop mensal para execução em lote
+│   └── docs_sql.py               Extração da SQL canônica dos docs
+├── ocde/                         Iniciativa OCDE/PGD ICMBio
+│   ├── indicadores/              Scripts IND_XX.1_run.py sanitizados (I01–I12)
+│   ├── relatorios/               Módulos de análise e relatório gerencial
+│   └── diagnosticos/             Template público de diagnóstico (IND_XX.4_template)
+├── mgi/                          Placeholder — indicadores MGI (em construção)
+│   └── indicadores/
 ├── .env.example                  Modelo do .env — sem senhas reais
 ├── consultas_denodo_template.ipynb  Notebook público sem credenciais
 └── README.md
@@ -43,7 +53,7 @@ C:\Projetos\pgd-ocde-icmbio\
 Tudo aqui é **local e sincronizado via nuvem**. Nunca vai para o GitHub.
 
 ```
-C:\Users\leand\OneDrive - ICMBio\projetos\pgd-ocde-icmbio-privado\
+C:\Users\<SEU_USUARIO>\OneDrive - ICMBio\projetos\pgd-ocde-icmbio-privado\
 ├── artefatos_local/
 │   ├── entregas/YYYY-MM/         CSVs mensais para entrega à COCAGE/Power BI
 │   ├── diagnosticos/YYYY-MM/     Scripts A4 e CSVs de diagnóstico interno
@@ -51,6 +61,12 @@ C:\Users\leand\OneDrive - ICMBio\projetos\pgd-ocde-icmbio-privado\
 │   ├── docs_internos/            Documentação local não publicável
 │   ├── historico/                Artefatos de fases anteriores
 │   └── backup_scripts_a1/        Cópias de segurança dos scripts A1
+├── cgov/                         Análises internas CGOV (privadas)
+│   └── analises/
+│       └── objetivos_processos/  I03 enriquecido com objetivos e cadeia de valor
+├── setup/                        Scripts de configuração de ambiente local
+│   ├── configurar_env.ps1        Gera .env com caminhos desta máquina
+│   └── criar_links_privados.ps1  Recria as pontes em um novo computador
 └── assistentes/
     ├── CLAUDE.md                 Contexto e instruções para o Claude Code
     ├── AGENTS.md                 Contexto para o Codex/OpenAI
@@ -72,11 +88,13 @@ C:\Users\leand\OneDrive - ICMBio\projetos\pgd-ocde-icmbio-privado\
 
 ## 3. Como o VS Code "enxerga" tudo junto
 
-Na pasta do projeto você verá as pastas `artefatos_local`, `.claude`, `.codex` e `.agents` como se estivessem ali, e os arquivos `CLAUDE.md`, `AGENTS.md` e `PROJECT.md` também. Mas eles são **pontes** (Junctions e HardLinks do Windows) que apontam para o OneDrive.
+Na pasta do projeto você verá as pastas `artefatos_local`, `cgov`, `setup`, `.claude`, `.codex` e `.agents` como se estivessem ali, e os arquivos `CLAUDE.md`, `AGENTS.md` e `PROJECT.md` também. Mas eles são **pontes** (Junctions e HardLinks do Windows) que apontam para o OneDrive.
 
 ```
 C:\Projetos\pgd-ocde-icmbio\
 ├── artefatos_local  →→→ [ponte] →→→ OneDrive\...\artefatos_local
+├── cgov             →→→ [ponte] →→→ OneDrive\...\cgov
+├── setup            →→→ [ponte] →→→ OneDrive\...\setup
 ├── .claude          →→→ [ponte] →→→ OneDrive\...\assistentes\.claude
 ├── .codex           →→→ [ponte] →→→ OneDrive\...\assistentes\.codex
 ├── .agents          →→→ [ponte] →→→ OneDrive\...\assistentes\.agents
@@ -113,7 +131,7 @@ O ícone do OneDrive na bandeja do sistema deve mostrar sincronização concluí
 .\setup\criar_links_privados.ps1
 ```
 
-Este script cria as Junctions e HardLinks que conectam o projeto ao OneDrive. Só precisa ser executado uma vez por computador.
+Este script cria as Junctions e HardLinks que conectam o projeto ao OneDrive — incluindo `artefatos_local`, `cgov`, `setup`, `.claude`, `.codex`, `.agents` e os arquivos de contexto dos assistentes de IA. Só precisa ser executado uma vez por computador.
 
 ### Passo 4 — Gerar o `.env` desta máquina
 
@@ -156,8 +174,11 @@ Os scripts Python leem **todos** os caminhos do arquivo `.env`, então não há 
 
 | Item | Compartilhado? | Como |
 |------|----------------|------|
-| Scripts Python (`scripts/`) | Sim | Git (`git pull`) |
+| Scripts OCDE (`ocde/indicadores/`) | Sim | Git (`git pull`) |
+| Módulos Python (`lib/`) | Sim | Git (`git pull`) |
 | Documentação (`docs/`) | Sim | Git (`git pull`) |
+| Análises CGOV (`cgov/`) | Sim | OneDrive (automático) |
+| Scripts de setup (`setup/`) | Sim | OneDrive (automático) |
 | CSVs mensais (`artefatos_local/entregas/`) | Sim | OneDrive (automático) |
 | Diagnósticos e relatórios | Sim | OneDrive (automático) |
 | Contexto dos assistentes de IA | Sim | OneDrive (automático) |
@@ -171,23 +192,24 @@ Os scripts Python leem **todos** os caminhos do arquivo `.env`, então não há 
 
 ```
 1. git pull                     → pega código e documentação atualizados
-2. Aguardar OneDrive sincronizar → artefatos e contexto de IA já disponíveis
+2. Aguardar OneDrive sincronizar → artefatos, cgov e contexto de IA já disponíveis
 3. Verificar .env presente       → se não, rodar configurar_env.ps1
 ```
 
 ### Ao terminar o trabalho
 
 ```
-1. git add / git commit / git push   → apenas arquivos públicos (scripts, docs)
+1. git add / git commit / git push   → apenas arquivos públicos (ocde/, lib/, docs/, setup/)
    [o .gitignore bloqueia tudo que for sensível]
-2. OneDrive sincroniza automaticamente → artefatos ficam disponíveis no outro computador
+2. OneDrive sincroniza automaticamente → artefatos e análises cgov ficam disponíveis no outro computador
 ```
 
 ### O que NUNCA fazer
 
 - `git add .env` — bloqueado pelo .gitignore, mas nunca forçar
+- `git add cgov/` — análises CGOV são privadas; ficam no OneDrive
 - Copiar credenciais nos comentários de commit ou nos nomes de arquivo
-- Mover CSVs para dentro de `docs/` ou `scripts/` — essas pastas são públicas
+- Mover CSVs para dentro de `docs/` ou `ocde/` — essas pastas são públicas
 - Colocar o `.env` no OneDrive — senha em texto puro na nuvem é risco desnecessário
 
 ---
@@ -213,16 +235,29 @@ Esses dados são **funcionais e institucionais**, não nominais. Ainda assim:
 | Camada | O que vai | Quem acessa | Voltado para |
 |--------|-----------|-------------|--------------|
 | **GitHub** (público) | Código, documentação, templates | Qualquer pessoa | Replicação por outros órgãos da APF |
-| **OneDrive** (privado/nuvem) | Artefatos, contexto de IA, resultados | Você (e colegas com acesso ao OneDrive ICMBio) | Continuidade entre seus computadores |
+| **OneDrive** (privado/nuvem) | Artefatos, `cgov/`, contexto de IA, resultados | Você (e colegas com acesso ao OneDrive ICMBio) | Continuidade entre seus computadores |
 | **Local apenas** | `.env` com credenciais | Só você, nesta máquina | Segurança — senha não vai a lugar nenhum |
 
 ---
 
 ## 9. Resolução de problemas comuns
 
-### "As pastas `artefatos_local`, `.claude` etc. aparecem vazias após clonar o repositório"
+### "As pastas `artefatos_local`, `cgov`, `.claude` etc. aparecem vazias após clonar o repositório"
 
 Normal — elas não são versionadas no Git. Execute `criar_links_privados.ps1` para recriar as pontes com o OneDrive.
+
+### "A pasta `cgov` não foi criada pelo script de links"
+
+O script exibe `IGNORADO (cgov): destino não existe ainda` se a pasta `cgov/` ainda não existir no OneDrive. Nesse caso:
+
+1. Crie a estrutura manualmente no OneDrive:
+
+   ```powershell
+   New-Item -ItemType Directory "$env:USERPROFILE\OneDrive - ICMBio\projetos\pgd-ocde-icmbio-privado\cgov\analises\objetivos_processos" -Force
+   ```
+
+2. Aguarde o OneDrive sincronizar
+3. Execute `criar_links_privados.ps1` novamente
 
 ### "O script Python falha com erro de driver JAR"
 

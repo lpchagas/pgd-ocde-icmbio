@@ -25,14 +25,16 @@ def artifact_month(today: date | None = None) -> str:
 
 def indicator_csv_dir(month: str | None = None) -> Path:
     """Pasta de entrega mensal — todos os CSVs de indicadores num único diretório por mês.
-    Exemplo: artefatos_local/entregas/2026-06/
+    Exemplo: artefatos_local/ocde/entregas/2026-06/
     """
-    return PROJECT_ROOT / "artefatos_local" / "entregas" / (month or artifact_month())
+    return PROJECT_ROOT / "artefatos_local" / "ocde" / "entregas" / (month or artifact_month())
 
 
 def diagnostic_csv_dir(month: str | None = None) -> Path:
-    """Pasta de CSVs diagnósticos (uso interno — não enviar à COCAGE)."""
-    return PROJECT_ROOT / "artefatos_local" / "diagnosticos" / (month or artifact_month())
+    """Pasta de CSVs diagnósticos (uso interno — não enviar à COCAGE).
+    Exemplo: artefatos_local/ocde/diagnosticos/2026-06/
+    """
+    return PROJECT_ROOT / "artefatos_local" / "ocde" / "diagnosticos" / (month or artifact_month())
 
 
 def write_pipe_csv(path: Path, columns: Sequence[str], rows: Iterable[Sequence[object]]) -> None:

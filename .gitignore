@@ -122,6 +122,19 @@ $RECYCLE.BIN/
 plano_estrutura_projeto.md
 
 # -----------------------------------------------------------------------------
+# Análises e iniciativas internas CGOV (privadas — OneDrive, nunca GitHub)
+# O diretório cgov/ é acessado via Junction apontando para o OneDrive.
+# docs/cgov/ permanece público (apenas README placeholder sem análises).
+# -----------------------------------------------------------------------------
+/cgov/
+
+# -----------------------------------------------------------------------------
+# Scripts de configuração de ambiente local (contêm caminhos e lógica locais)
+# Acessados via Junction apontando para o OneDrive.
+# -----------------------------------------------------------------------------
+/setup/
+
+# -----------------------------------------------------------------------------
 # Pasta aninhada criada em sessão anterior (pode ser deletada manualmente)
 # -----------------------------------------------------------------------------
 /DM_Petrvs_icmbio_mysql/

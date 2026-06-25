@@ -19,7 +19,7 @@ Alertas de qualidade:
   - Planos com datas invalidas: descartados com aviso de contagem.
   - Periodo em andamento: dados do ultimo periodo sao preliminares.
 
-Saidas (em artefatos_local/entregas/YYYY-MM/):
+Saidas (em artefatos_local/ocde/entregas/YYYY-MM/):
   IND_01.2_v1_proporcao_mensal_AAAAMMDD_HHMM.csv      -- visao institucional
   IND_01.2_v2_proporcao_unidade_mensal_AAAAMMDD_HHMM.csv -- visao por unidade
 
