@@ -1,7 +1,7 @@
 """IND_11.1_run.py — I11: Percentual de Avaliações Excepcionais por Unidade.
 
 Instrumento: Plano de Trabalho (PT).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ mensal (M01–M12).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ mensal (M01–M12). Base: 01/07/2025.
 
 Correção de escala (12.06.2026): o SQL original usava sequencia=5 para identificar
 "Excepcional", mas sequencia=5 é "Não executado" no banco ICMBio. Resultado incorreto:

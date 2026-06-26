@@ -1,7 +1,7 @@
 """IND_03.1_run.py — I03: Taxa de Cumprimento de Metas por Entrega.
 
 Instrumento: Plano de Entregas (PE).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ quadrimestral (Q1–Q3).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ quadrimestral (Q1–Q3). Base: 01/07/2025.
 
 Diferença metodológica I02 vs I03:
   I02: PEs que se SOBREPÕEM ao período (pe.data_inicio/pe.data_fim)

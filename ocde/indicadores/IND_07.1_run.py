@@ -1,7 +1,7 @@
 """IND_07.1_run.py — I07: Horas por Entrega — Planejadas (Absolutas).
 
 Instrumento: misto PT + PE — ciclo alinhado ao Plano de Entregas (PE).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ quadrimestral (Q1–Q3).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ quadrimestral (Q1–Q3). Base: 01/07/2025.
 
 Calcula o total de horas planejadas alocadas a cada entrega do PE, somando
 a contribuição proporcional de todos os servidores cujos PTs se sobrepõem

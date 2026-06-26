@@ -1,7 +1,7 @@
 """IND_12.1_run.py — I12: Coerência entre Avaliação do PT e do PE.
 
 Instrumento: misto PT + PE — ciclo alinhado ao Plano de Entregas (PE).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ quadrimestral (Q1–Q3).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ quadrimestral (Q1–Q3). Base: 01/07/2025.
 
 Correção de escala (19.06.2026): o SQL original usava JSON_UNQUOTE(tan.nota) com
 CASE WHEN textual — que não funciona no Denodo VQL via JDBC. Isso fazia as médias
@@ -23,8 +23,8 @@ Achados de validação (12.06.2026):
   - Diferença média 0,24–0,34 pts (escala 1–5).
   - Padrão PE > PT (38%) > PT > PE (27%): avaliador coletivo tende a dar nota
     levemente superior à média dos PTs (oposto de leniência avaliativa).
-  - 77 unidades com ciclo incompleto em T1-2025 (PT sem PE correspondente),
-    excluídas do JOIN — destaque para GR3, NGI-TEFE, CBC.
+  - 77 unidades com ciclo incompleto em T1/T2-2025 (PT sem PE correspondente)
+    excluídas do JOIN — fora do período base (H1/2025 não analisado).
 
 Nota: o JOIN interno entre PT e PE exclui unidades sem as duas perspectivas.
 Para listar essas unidades, executar o diagnóstico A4 (IND_12.4).

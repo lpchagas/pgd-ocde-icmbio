@@ -1,7 +1,7 @@
 """IND_02.1_run.py — I02: Taxa de Cumprimento das Entregas por Unidade.
 
 Instrumento: Plano de Entregas (PE).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ quadrimestral (Q1–Q3).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ quadrimestral (Q1–Q3). Base: 01/07/2025.
 
 Critério principal (OCDE): todas as entregas com meta válida no ciclo —
 filtra PEs que se SOBREPÕEM ao período (pe.data_inicio/pe.data_fim), não

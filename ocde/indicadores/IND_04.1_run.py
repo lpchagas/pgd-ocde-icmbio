@@ -1,7 +1,7 @@
 """IND_04.1_run.py — I04: Índice de Atingimento de Metas por Unidade.
 
 Instrumento: Plano de Entregas (PE).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ quadrimestral (Q1–Q3).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ quadrimestral (Q1–Q3). Base: 01/07/2025.
 
 O I04 calcula o score médio de execução por unidade: média aritmética das
 proporções de atingimento (realizado / planejado) de todas as entregas do

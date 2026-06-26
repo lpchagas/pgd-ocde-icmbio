@@ -1,7 +1,7 @@
 """IND_06.1_run.py — I06: Grau de Responsabilidade pelas Entregas.
 
 Instrumento: Plano de Trabalho (PT).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ mensal (M01–M12).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ mensal (M01–M12). Base: 01/07/2025.
 
 O I06 calcula quantos servidores estão vinculados a cada entrega do PE,
 classificando-as por tamanho do grupo responsável, respondendo:

@@ -1,7 +1,7 @@
 """IND_10.1_run.py — I10: Percentual de Avaliações Inadequadas por Unidade.
 
 Instrumento: Plano de Trabalho (PT).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ mensal (M01–M12).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ mensal (M01–M12). Base: 01/07/2025.
 
 Correção de escala (12.06.2026): o script original usava sequencia=2 para identificar
 "Inadequado", mas sequencia=2 é "Alto desempenho" no banco ICMBio. Resultado incorreto:

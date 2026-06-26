@@ -1,7 +1,7 @@
 """IND_01.1_run.py — I01: Proporcao de Servidores por Regime de Trabalho.
 
 Instrumento: Plano de Trabalho (PT).
-Periodicidade: 2025 trimestral (T1-T4) | 2026+ mensal (M01-M12).
+Periodicidade: 2025 trimestral (T3-T4) | 2026+ mensal (M01-M12). Base: 01/07/2025.
 
 Estrategia de calculo: uma unica consulta ao Denodo carrega todos os planos
 de trabalho com vigencia a partir de 2025. A segmentacao temporal e feita em

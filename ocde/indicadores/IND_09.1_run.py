@@ -1,7 +1,7 @@
 """IND_09.1_run.py — I09: Média da Avaliação do Plano de Trabalho por Unidade.
 
 Instrumento: Plano de Trabalho (PT).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ mensal (M01–M12).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ mensal (M01–M12). Base: 01/07/2025.
 
 Correção de escala (19.06.2026): o SQL original usava JSON_UNQUOTE(tan.nota) com
 CASE WHEN textual — que não funciona no Denodo VQL via JDBC (retorna NULL para todos

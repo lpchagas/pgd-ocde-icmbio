@@ -1,7 +1,7 @@
 """IND_05.1_run.py — I05: Distribuição das Entregas entre os Servidores.
 
 Instrumento: Plano de Trabalho (PT).
-Periodicidade: 2025 trimestral (T1–T4) | 2026+ mensal (M01–M12).
+Periodicidade: 2025 trimestral (T3–T4) | 2026+ mensal (M01–M12). Base: 01/07/2025.
 
 O I05 calcula quantas entregas do PE cada servidor carrega no PT e compara
 com a média dos demais servidores da mesma unidade, respondendo:
