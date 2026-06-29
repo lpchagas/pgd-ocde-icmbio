@@ -240,7 +240,76 @@ Esses dados são **funcionais e institucionais**, não nominais. Ainda assim:
 
 ---
 
-## 9. Resolução de problemas comuns
+## 9. Proteção contra perda acidental e backup de redundância
+
+### Por que isso importa
+
+A pasta `OneDrive - ICMBio\projetos\` contém as pontes que conectam o projeto ao OneDrive. Se ela for apagada ou movida acidentalmente, todas as 6 junctions do projeto ficam quebradas e as pastas `artefatos_local`, `cgov`, `setup`, `.claude`, `.codex` e `.agents` aparecem vazias.
+
+O OneDrive recupera arquivos deletados da lixeira da nuvem (por até 93 dias), mas a resincronização pode levar horas. Para minimizar o risco, duas medidas preventivas estão em vigor:
+
+### Medida 1 — Arquivo sentinela
+
+Um arquivo `LEIA-ME_NAO_DELETAR.txt` fica na raiz de `OneDrive - ICMBio\projetos\`. Ele serve de alerta visual antes de qualquer deleção acidental no Explorer ou no OneDrive web.
+
+Para recriar o sentinela (caso seja necessário):
+
+```powershell
+.\setup\criar_links_privados.ps1   # verifica se a pasta privada existe
+```
+
+### Medida 2 — Backup de redundância no Google Drive
+
+O script `setup\backup_privado.ps1` copia incrementalmente as partes não regeneráveis do projeto para o Google Drive, criando uma segunda cópia independente do OneDrive ICMBio.
+
+**O que é copiado:**
+
+| Pasta | Conteúdo | Por que incluir |
+| --- | --- | --- |
+| `assistentes\` | CLAUDE.md, skills, .claude/, .codex/ | Não versionado no Git |
+| `cgov\` | Análises internas CGOV | Privadas e únicas |
+| `setup\` | configurar_env.ps1, criar_links_privados.ps1 | Scripts de recuperação do ambiente |
+| `artefatos_local\validacao\` | Relatórios A5 e PDFs A3 | Resultado de trabalho manual — não regenerável |
+| `artefatos_local\ocde\diagnosticos\` | Scripts A4 e CSVs de diagnóstico | Registro de investigações — não regenerável |
+| `artefatos_local\docs_internos\` | Documentação local | Não versionada |
+| `artefatos_local\historico\` | Artefatos de fases anteriores | Referência histórica |
+
+**O que NÃO é copiado (economiza espaço — regenerável):**
+
+| Pasta | Por que excluir |
+| --- | --- |
+| `artefatos_local\ocde\entregas\` | CSVs mensais dos 12 indicadores — regeneráveis em minutos via `python IND_XX.1_run.py` |
+| `artefatos_local\ocde\analises\` | Gráficos PNG — regeneráveis via `/graficos-indicadores` |
+| `artefatos_local\ocde\relatorios\` | Relatórios Markdown — regeneráveis via `/relatorio-gerencial` |
+
+**Como executar:**
+
+```powershell
+.\setup\backup_privado.ps1
+```
+
+O script usa `robocopy` (nativo do Windows) com cópia incremental — só sincroniza o que mudou, sem duplicar dados desnecessariamente.
+
+**Quando executar:**
+
+- Após validar e salvar relatórios A5 importantes
+- Após atualizar arquivos de contexto dos assistentes de IA (CLAUDE.md etc.)
+- **Antes de reorganizar pastas no OneDrive** ← evita exatamente o incidente que motivou esta seção
+- Semanalmente como rotina preventiva
+
+### Recuperação em caso de perda
+
+Se a pasta `projetos\` for deletada do OneDrive:
+
+1. **Recuperar do Google Drive** (imediato): a pasta `My Drive\_projetos\pgd-ocde-icmbio-privado\` contém a última cópia do backup.
+2. **Copiar de volta para o OneDrive**: restaurar manualmente para `OneDrive - ICMBio\projetos\pgd-ocde-icmbio-privado\`.
+3. **Aguardar sincronização** do OneDrive.
+4. **Recriar as junctions**: `.\setup\criar_links_privados.ps1`
+5. **Restaurar os CSVs de entregas** (se necessário): reexecutar os scripts `IND_XX.1_run.py` para cada indicador — os dados vêm do Denodo em tempo real.
+
+---
+
+## 10. Resolução de problemas comuns
 
 ### "As pastas `artefatos_local`, `cgov`, `.claude` etc. aparecem vazias após clonar o repositório"
 
